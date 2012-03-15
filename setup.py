@@ -18,7 +18,7 @@ setup(
     long_description = file(
         os.path.join(
             os.path.dirname(__file__),
-            'README.rst'
+            'README'
         )
     ).read(),
     author = 'Victor Safronovich',
