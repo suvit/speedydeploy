@@ -1,5 +1,5 @@
 SENTRY_SERVERS = ['{{sentry_server}}']
-SENTRY_KEY = {% if sentry_key %}{{ sentry_key }}{% else %}None{% endif %}
+SENTRY_KEY = {% if sentry_key %}'{{ sentry_key }}'{% else %}None{% endif %}
 
 LOGGING['handlers']['sentry'] = {
     'level': 'DEBUG',
