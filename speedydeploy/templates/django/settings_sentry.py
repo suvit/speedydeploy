@@ -1,6 +1,5 @@
-SENTRY_REMOTE_URL = 'http://errors.progway.ru/sentry/store/'
-SENTRY_SERVERS = ['http://errors.progway.ru/sentry/store/']
-SENTRY_KEY = None
+SENTRY_SERVERS = ['{{sentry_server}}']
+SENTRY_KEY = {% if sentry_key %}{{ sentry_key }}{% else %}None{% endif %}
 
 LOGGING['handlers']['sentry'] = {
     'level': 'DEBUG',

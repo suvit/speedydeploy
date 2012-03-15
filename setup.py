@@ -15,7 +15,12 @@ setup(
     version = __version__,
 
     description = 'Speed deploy',
-    long_description = 'Speed deploy',
+    long_description = file(
+        os.path.join(
+            os.path.dirname(__file__),
+            'README.rst'
+        )
+    ).read(),
     author = 'Victor Safronovich',
     author_email = 'vsafronovich@gmail.com',
     license = 'MIT',
@@ -35,5 +40,12 @@ setup(
     ],
     zip_safe = False,
     packages = find_packages(exclude=['docs', 'examples', 'tests']),
+    install_requires=file(
+        os.path.join(
+            os.path.dirname(__file__),
+            'speedydeploy',
+            'requirements.txt'
+        )
+    ).read().split(),
     include_package_data = True,
 )
