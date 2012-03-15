@@ -1,0 +1,3 @@
+fabric
+django-fab-deploy
+Jinja2
