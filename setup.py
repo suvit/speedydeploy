@@ -7,26 +7,26 @@ import os
 from setuptools import setup, find_packages
 import sys
 
-from speedydeploy import __version__
+from speedydeploy import get_version
 
 
 setup(
-    name = 'speedydeploy',
-    version = __version__,
+    name='speedydeploy',
+    version=get_version(),
 
-    description = 'Speed deploy',
-    long_description = file(
+    description='Speed deploy',
+    long_description=file(
         os.path.join(
             os.path.dirname(__file__),
             'README'
         )
     ).read(),
-    author = 'Victor Safronovich',
-    author_email = 'vsafronovich@gmail.com',
-    license = 'MIT',
-    url = 'http://github.com/suvit/speedydeploy',
+    author='Victor Safronovich',
+    author_email='vsafronovich@gmail.com',
+    license='MIT',
+    url='http://github.com/suvit/speedydeploy',
 
-    classifiers = [
+    classifiers=[
         'Development Status :: 4 - Beta',
         'Environment :: Other Environment',
         'Intended Audience :: Developers',
@@ -38,8 +38,8 @@ setup(
         'Topic :: Utilities',
         'Topic :: Software Development :: Libraries :: Python Modules',
     ],
-    zip_safe = False,
-    packages = find_packages(exclude=['docs', 'examples', 'tests']),
+    zip_safe=False,
+    packages=find_packages(exclude=['docs', 'examples', 'tests']),
     install_requires=file(
         os.path.join(
             os.path.dirname(__file__),
@@ -47,5 +47,5 @@ setup(
             'requirements.txt'
         )
     ).read().split(),
-    include_package_data = True,
+    include_package_data=True,
 )
