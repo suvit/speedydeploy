@@ -2,3 +2,4 @@ include .gitignore
 include LICENSE
 include NOTICE
 include THANKS
+recursive-include speedydeploy/templates *
