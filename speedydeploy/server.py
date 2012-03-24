@@ -287,7 +287,7 @@ class NginxWithGunicorn(NginxServer):
     def install_requirements(self):
         with fab.cd(_('%(remote_dir)s/')):
             # XXX 0.14 is buggy TODO
-            fab.run('env/bin/pip install -U gunicorn<0.14')
+            fab.run('env/bin/pip install -U "gunicorn<0.14"')
             fab.run('env/bin/pip install -U setproctitle')
 
     def dirs(self):

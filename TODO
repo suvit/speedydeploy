@@ -4,3 +4,4 @@ write examples
 
 remove Deployment from __init__
 added auto settings methods to Deployment from derived objects
+rename Server class and instances to WebServer
