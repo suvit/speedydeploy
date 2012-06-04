@@ -1,6 +1,7 @@
 import os
 
 LOG_DIRNAME = locals().get('LOG_DIRNAME', '{{remote_dir}}/log/')
+LOG_FILENAME = locals().get('LOG_FILENAME', 'shop.log')
 
 LOGGING = {
     'version': 1,
@@ -24,7 +25,7 @@ LOGGING = {
         'default':{
             'level': 'DEBUG',
             'class': 'logging.FileHandler',
-            'filename': os.path.join(LOG_DIRNAME, 'shop.log'),
+            'filename': os.path.join(LOG_DIRNAME, LOG_FILENAME),
             'formatter': 'advanced',
         },
         'console':{
