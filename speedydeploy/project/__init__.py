@@ -461,39 +461,23 @@ class Project(object):
     def install_development_libraries(self):
         os = fab.env.os
 
-        os.install_development_libraries()
-
         if self.use_pip:
-            # vcs (needed by pip) XXX remove to pip
+            # vcs (needed by pip) XXX remove to pip object
             os.install_package('subversion')
             os.install_package('mercurial')
             os.install_package('git-core')
 
-        if self.use_memcache:
-            fab.env.memcache.install_development_libraries()
-
         if self.use_pil:
             # must have to compile PIL jpeg support
+            # XXX remove to PIL object
             os.install_package('libjpeg62 libjpeg62-dev')
             os.install_package('libfreetype6 libfreetype6-dev')
 
-        if self.use_server:
-            fab.env.server.install_development_libraries()
-
-        if self.use_database:
-            fab.env.db.install_development_libraries()
-
-        if self.use_supervisor:
-            fab.env.project.supervisor.install_development_libraries()
-
-        if self.use_scrapy:
-            fab.env.project.scrapy.install_development_libraries()
-
-        if self.use_vcs:
-            fab.env.vcs.install_development_libraries()
-
-        if self.use_celery:
-            fab.env.celery.install_development_libraries()
+        for name in ('os', 'server', 'database', 'supervisor',
+                     'scrapy', 'vcs', 'celery', 'sphinxsearch',
+                     'memcache'):
+            if getattr(self, 'use_' + name, False):
+                getattr(fab.env, name).install_development_libraries()
 
     @run_as('root')
     def install_setuptools(self):
