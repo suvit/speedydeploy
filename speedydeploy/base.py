@@ -119,6 +119,11 @@ class LennyDebian(Debian):
     version = '5.0'
 
 
+class SqueezeDebian(Debian):
+    name = 'squeeze'
+    version = '6.0'
+
+
 class Ubuntu(Debian):
     daemon_restarter = 'service'
 
@@ -138,6 +143,16 @@ class Ubuntu114(Ubuntu):
     version = '11.4'
 
 
+class Ubuntu1110(Ubuntu):
+    name = 'oneiric'
+    version = '11.10'
+
+
+class Ubuntu1214(Ubuntu):
+    name = 'precise'
+    version = '12.4'
+
+
 class Windows(OS):
     path = nt_path
 
@@ -148,6 +163,11 @@ class Windows(OS):
 class WindowsXP(Windows):
     name = 'xp'
     version = '5.1'
+
+
+class Windows7(Windows):
+    name = '7'
+    version = '7.0'
 
 
 class Daemon(object):
