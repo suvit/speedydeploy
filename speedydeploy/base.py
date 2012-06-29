@@ -39,6 +39,11 @@ class OS(object):
     def install_package(self, package):
         raise NotImplementedError()
 
+    @run_as('root')
+    def install_development_libraries(self):
+        # must have to compile mysql and etc
+        self.install_package('python-dev')
+
 
 class Linux(OS):
 
@@ -83,6 +88,10 @@ class Debian(Linux):
 
     def del_user(self, user):
         return fab.sudo('deluser %s' % user)
+
+    @run_as('root')
+    def install_development_libraries(self):
+        self.install_package('sudo')
 
 
 class FreeBSD(OS):

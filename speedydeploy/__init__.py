@@ -90,6 +90,11 @@ class Deployment(object):
     def os_add_user(self):
         fab.env.os.add_user(fab.env.user)
 
+    @run_as('root')
+    def add_user(self):
+        self.os_add_user()
+        self.update_rsa_key()
+
     def vcs_deploy(self, force_remove=False):
         fab.env.vcs.deploy(force_remove)
     deploy = vcs_deploy
@@ -186,7 +191,7 @@ class Deployment(object):
 
     def set_permissions(self, target=None, pattern=None):
         if target is None:
-            target = '%(remote_dir)s/%(project_name)s' % context
+            target = '%(remote_dir)s/%(project_name)s' % fab.env
         
         if pattern is None:
             pattern = 'u+rwX,go+rX,go-w'

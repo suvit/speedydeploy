@@ -342,7 +342,7 @@ class Scrapy(object):
                      use_jinja=True)
 
     def install_development_libraries(self):
-        os.install_package('libxml2 libxml2-dev libxslt-dev')
+        fab.env.os.install_package('libxml2 libxml2-dev libxslt-dev')
 
 
 class SuperVisor(Daemon):
@@ -417,6 +417,7 @@ class Project(object):
     use_django = property(lambda self: hasattr(self, 'django'))
 
     use_pil = True # project depends
+    use_pip = True
 
     def install(self):
         dirs = ['backup', 'data', 'etc',
@@ -460,13 +461,13 @@ class Project(object):
     def install_development_libraries(self):
         os = fab.env.os
 
-        # must have to compile mysql and etc
-        os.install_package('python-dev')
+        os.install_development_libraries()
 
-        # vcs (needed by pip) XXX remove to pip
-        os.install_package('subversion')
-        os.install_package('mercurial')
-        os.install_package('git-core')
+        if self.use_pip:
+            # vcs (needed by pip) XXX remove to pip
+            os.install_package('subversion')
+            os.install_package('mercurial')
+            os.install_package('git-core')
 
         if self.use_memcache:
             fab.env.memcache.install_development_libraries()
