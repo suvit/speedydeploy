@@ -81,7 +81,7 @@ class Debian(Linux):
         return fab.run('mkdir -p %s' % command)
 
     def install_package(self, package):
-        return fab.sudo('apt-get install -y %s' % package)
+        return fab.sudo('apt-get install -q -y %s' % package)
 
     def add_user(self, user):
         return fab.sudo('adduser %s' % user)

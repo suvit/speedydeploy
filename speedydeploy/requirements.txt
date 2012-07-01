@@ -1,3 +1,1 @@
-fabric
-django-fab-deploy
-Jinja2
+django-fab-deploy>=0.7.4
