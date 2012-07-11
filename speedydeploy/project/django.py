@@ -23,6 +23,7 @@ class DjangoProject(object):
 
     # app depends
     USE_SOUTH = True
+    # TODO get info from settings.py
     USE_STATICFILES = False
 
     def __init__(self, project_path, settings_local=None, python_path=None):
@@ -45,7 +46,7 @@ class DjangoProject(object):
             fab.run('%s manage.py %s' % (self.python_path,
                                          command)
                    )
-                          
+
     def syncdb(self, app=''):
         self.run('syncdb --noinput %s' % app)
 
@@ -60,7 +61,7 @@ class DjangoProject(object):
     
     def createsuperuser(self):
         self.run('createsuperuser')
-    
+
     # remove this
     def createshop(self):
         self.run('create_shop')

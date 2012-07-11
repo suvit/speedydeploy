@@ -180,6 +180,9 @@ deb-src http://mirror2.hs-esslingen.de/mariadb/repo/%(db_version)s/ubuntu %(os_n
     def install_headers(self):
         fab.env.os.install_package('libmariadbclient-dev libmariadbd-dev')
 
+        # XXX needed to install mysql-python later
+        fab.env.os.install_package('libssl-dev')
+
 
 class Maria51Database(MysqlDatabase):
     version = '5.1'

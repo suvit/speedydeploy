@@ -297,7 +297,7 @@ class LogRotate(object):
     config_dir = '/etc/logrotate.d'
 
     def add_script(self, file_name):
-        fab.put(file_name, 
+        fab.put(file_name,
                 fab.env.os.path.join(self.config_dir,
                                      _('%(user)s')),
                 use_sudo=True)
@@ -405,7 +405,7 @@ class Project(object):
     use_os = property(lambda self: hasattr(fab.env, 'os'))
     use_cron = property(lambda self: hasattr(fab.env, 'cron'))
     use_server = property(lambda self: hasattr(fab.env, 'server'))
-    use_database = property(lambda self: hasattr(fab.env, 'db'))
+    use_db = property(lambda self: hasattr(fab.env, 'db'))
     use_memcache = property(lambda self: hasattr(fab.env, 'memcache'))
     use_celery = property(lambda self: hasattr(fab.env, 'celery'))
     use_sphinxsearch = property(lambda self: hasattr(fab.env, 'sphinxsearch'))
@@ -473,7 +473,7 @@ class Project(object):
             os.install_package('libjpeg62 libjpeg62-dev')
             os.install_package('libfreetype6 libfreetype6-dev')
 
-        for name in ('os', 'server', 'database', 'supervisor',
+        for name in ('os', 'server', 'db', 'supervisor',
                      'scrapy', 'vcs', 'celery', 'sphinxsearch',
                      'memcache'):
             if getattr(self, 'use_' + name, False):
