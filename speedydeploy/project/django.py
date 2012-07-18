@@ -115,3 +115,12 @@ class DjangoProject(object):
 
     def deploy_static(self):
         self.run('collectstatic -v0 --noinput')
+
+class Django14(DjangoProject):
+    #XXX
+    def run(self, command):
+        with fab.cd(self.project_path + '../'):
+            fab.run('%s manage.py %s' % (self.python_path,
+                                         command)
+                   )
+
