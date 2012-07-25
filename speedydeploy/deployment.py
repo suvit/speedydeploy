@@ -86,6 +86,9 @@ class Deployment(object):
         fab.env.vcs.deploy(force_remove)
     deploy = vcs_deploy
 
+    def update_reqs(self):
+        fab.env.project.update_reqs()
+
     def project_install(self):
         fab.env.project.install()
 
