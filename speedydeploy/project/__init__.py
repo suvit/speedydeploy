@@ -460,7 +460,8 @@ class Project(object):
     def update_reqs(self):
         with fab.cd(_('%(remote_dir)s/')):
             if exists(_("%(project_name)s/requirements.txt")):
-                fab.run(_("env/bin/pip install -r %(project_name)s/requirements.txt"))
+                fab.run(_("env/bin/pip install -U -r"
+                          " %(project_name)s/requirements.txt"))
 
     @run_as('root')
     def install_development_libraries(self):
