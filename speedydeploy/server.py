@@ -287,7 +287,7 @@ class NginxWithGunicorn(NginxServer):
     def install_requirements(self):
         with fab.cd(_('%(remote_dir)s/')):
             # XXX 0.14 is buggy TODO
-            fab.run('env/bin/pip install -U "gunicorn<0.14"')
+            fab.run('env/bin/pip install -U gunicorn')
             fab.run('env/bin/pip install -U setproctitle')
 
     def dirs(self):
@@ -299,11 +299,18 @@ class NginxWithGunicorn(NginxServer):
 
     def start_backend(self):
         if fab.env.project.use_django:
-            fab.env['gunicorn_starter'] = 'gunicorn_django settings.py'
+            if fab.env.project.django.HAS_WSGI:
+                fab.env['gunicorn_starter'] = _('gunicorn '
+                                                '%(project_name)s.wsgi:application')
+            else:
+                fab.env['gunicorn_starter'] = 'gunicorn_django'
+            cwd_path = _('%(django_python_path)s')
         else:
-            fab.env['gunicorn_starter'] = _('gunicorn %(project_name)s:application')
+            fab.env['gunicorn_starter'] = _('gunicorn '
+                                            '%(project_name)s:application')
+            cwd_path = _('%(remote_dir)s/%(project_name)s')
 
-        with fab.cd(_('%(remote_dir)s/%(project_name)s')):
+        with fab.cd(cwd_path):
             fab.run(_('%(remote_dir)s/env/bin/%(gunicorn_starter)s'
                       ' -c %(remote_dir)s/etc/gunicorn/conf.py'))
 

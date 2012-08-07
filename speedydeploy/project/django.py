@@ -14,7 +14,9 @@ class DjangoProject(object):
     python_path = '../env/bin/python'
     media_path = '../media'
     settings_local = './settings_local.py'
-    version = '1.3'
+    version = (1, 3)
+
+    HAS_WSGI = property(lambda self: self.version < (1, 4))
 
     USE_LOGGING = True
     USE_SENTRY = True
@@ -26,9 +28,13 @@ class DjangoProject(object):
     # TODO get info from settings.py
     USE_STATICFILES = False
 
-    def __init__(self, project_path, settings_local=None, python_path=None):
+    def __init__(self, project_path,
+                       settings_local=None,
+                       python_path=None):
         self.project_path = project_path
         fab.env['django_project_path'] = project_path
+        fab.env['django_python_path'] = project_path
+
         if settings_local is not None:
             self.settings_local = settings_local
         if python_path is not None:
@@ -36,13 +42,16 @@ class DjangoProject(object):
 
         self.settings_local_path = self.project_path + self.settings_local
 
+    def get_version(self):
+        return '.'.join(str(part) for part in self.version)
+
     def install_requirements(self):
         with fab.cd(_('%(remote_dir)s')):
             fab.run(_("env/bin/pip install -r"
                       " %(django_project_path)s/requirements.txt"))
 
     def run(self, command):
-        with fab.cd(self.project_path):
+        with fab.cd(_('%(django_python_path)s')):
             fab.run('%s manage.py %s' % (self.python_path,
                                          command)
                    )
@@ -117,10 +126,12 @@ class DjangoProject(object):
         self.run('collectstatic -v0 --noinput')
 
 class Django14(DjangoProject):
-    #XXX
-    def run(self, command):
-        with fab.cd(self.project_path + '../'):
-            fab.run('%s manage.py %s' % (self.python_path,
-                                         command)
-                   )
+    version = (1, 4)
 
+    def __init__(self, *args, **kwargs):
+        super(Django14, self).__init__(*args, **kwargs)
+        path = fab.env['os'].path
+        print 'django path', self.project_path
+        path = path.split(self.project_path.rstrip('/'))[0]
+        print 'django path2', path
+        fab.env['django_python_path'] = path
