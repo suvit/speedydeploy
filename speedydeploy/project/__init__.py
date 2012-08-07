@@ -489,12 +489,12 @@ class Project(object):
     def install_setuptools(self):
         os = fab.env.os.install_package("python-setuptools build-essential")
 
-        fab.sudo("/usr/bin/easy_install distribute")
-        fab.sudo("/usr/bin/easy_install pip")
+        fab.sudo("easy_install distribute")
+        fab.sudo("easy_install pip")
 
     @run_as('root')
     def install_virtualenv(self):
-        fab.sudo("/usr/bin/easy_install virtualenv")
+        fab.sudo("easy_install virtualenv")
 
     def create_env(self):
         with fab.cd(_('%(remote_dir)s')):
