@@ -16,7 +16,7 @@ class DjangoProject(object):
     settings_local = './settings_local.py'
     version = (1, 3)
 
-    HAS_WSGI = property(lambda self: self.version < (1, 4))
+    HAS_WSGI = property(lambda self: self.version >= (1, 4))
 
     USE_LOGGING = True
     USE_SENTRY = True
@@ -33,7 +33,6 @@ class DjangoProject(object):
                        python_path=None):
         self.project_path = project_path
         fab.env['django_project_path'] = project_path
-        fab.env['django_python_path'] = project_path
 
         if settings_local is not None:
             self.settings_local = settings_local
@@ -41,6 +40,10 @@ class DjangoProject(object):
             self.python_path = python_path
 
         self.settings_local_path = self.project_path + self.settings_local
+        path = fab.env['os'].path
+        fab.env['django_project_name'] = path.basename(self.project_path.rstrip('/'))
+        fab.env['django_python_path'] = project_path
+
 
     def get_version(self):
         return '.'.join(str(part) for part in self.version)

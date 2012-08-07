@@ -301,7 +301,7 @@ class NginxWithGunicorn(NginxServer):
         if fab.env.project.use_django:
             if fab.env.project.django.HAS_WSGI:
                 fab.env['gunicorn_starter'] = _('gunicorn '
-                                                '%(project_name)s.wsgi:application')
+                                                '%(django_project_name)s.wsgi:application')
             else:
                 fab.env['gunicorn_starter'] = 'gunicorn_django'
             cwd_path = _('%(django_python_path)s')
