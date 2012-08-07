@@ -130,8 +130,7 @@ class Django14(DjangoProject):
 
     def __init__(self, *args, **kwargs):
         super(Django14, self).__init__(*args, **kwargs)
+
         path = fab.env['os'].path
-        print 'django path', self.project_path
-        path = path.split(self.project_path.rstrip('/'))[0]
-        print 'django path2', path
-        fab.env['django_python_path'] = path
+        python_path = path.split(self.project_path.rstrip('/'))[0]
+        fab.env['django_python_path'] = python_path
