@@ -56,7 +56,6 @@ class Linux(OS):
         fab.run(_('chown %(user)s:%(user)s %(target)s -R'))
         fab.run(_('chmod %(pattern)s %(target)s -R'))
 
-    @run_as('root')
     def set_permissions(self, target=None, pattern=None):
         context = fab.env
 
@@ -68,8 +67,8 @@ class Linux(OS):
             pattern = 'u+rwX,go+rX,go-w'
         context['pattern'] = pattern
 
-        fab.sudo('chown %(user)s:%(user)s %(target)s -R' % context)
-        fab.sudo('chmod %(pattern)s %(target)s -R' % context )
+        fab.run('chown %(user)s:%(user)s %(target)s -R' % context)
+        fab.run('chmod %(pattern)s %(target)s -R' % context )
 
 
 class Debian(Linux):

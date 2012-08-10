@@ -1,0 +1,19 @@
+{% if apache_fcgi_full %}
+Options +FollowSymlinks
+
+AddHandler fcgid-script .fcgi
+{% endif %}
+
+RewriteEngine On
+
+# Exclude /assets and /media directories and images from rewrite rules
+RewriteRule ^(assets|media)/* - [L]
+RewriteRule \.(jpg|jpeg|png|gif|ico)$ - [L]
+
+# Rewrite domain.com -> www.domain.com -- used with SEO Strict URLs plugin
+#RewriteCond %{HTTP_HOST} .
+#RewriteCond %{HTTP_HOST} !^{{domain}} [NC]
+#RewriteRule (.*) http://{{domain}}/$1 [R=301,L]
+
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^(.*)$ {% if not apache_fcgi_full %}/cgi-bin{% endif %}/wrapper.fcgi/$1 [QSA,L]

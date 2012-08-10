@@ -62,12 +62,17 @@ class Deployment(object):
         if fab.env.user == 'root':
             ssh_dir = '/root/.ssh'
         else:
-            ssh_dir = _('/home/%(user)s/.ssh')
+            if 'home_dir' in fab.env:
+                ssh_dir = _('%(home_dir)s/.ssh')
+            else:
+                ssh_dir = _('/home/%(user)s/.ssh')
 
         fab.env.os.mkdir(ssh_dir)
         fab_files.append('%s/authorized_keys' % ssh_dir, ssh_key)
-        self.set_permissions('%s/authorized_keys' % ssh_dir,
-                             pattern='644')
+
+        with fab.settings(warn_only=True): # no chmod in system
+           self.set_permissions('%s/authorized_keys' % ssh_dir,
+                                pattern='644')
 
     @run_as('root')
     def update_rsa_key(self, pub_key_file):
@@ -189,10 +194,10 @@ class Deployment(object):
         fab.env.os.set_permissions(target=target, pattern=pattern)
 
     def update_env(self):
+        fab.env.project.install()
         fab.env.project.install_development_libraries()
         fab.env.project.install_setuptools()
         fab.env.project.install_virtualenv()
-        fab.env.project.install()
 
     def create_env(self):
         fab.env.project.create_env()

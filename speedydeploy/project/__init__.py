@@ -420,7 +420,7 @@ class Project(object):
     use_pip = True
 
     def install(self):
-        dirs = ['backup', 'data', 'etc',
+        dirs = ['', 'backup', 'data', 'etc',
                 'log', 'media', 'run',
                 'tmp', 'utils']
 

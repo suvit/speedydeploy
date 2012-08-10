@@ -250,12 +250,11 @@ class Apache2ServerWithWsgi(Apache2Server):
         self.restart()
 
 
-class NginxWithFcgi(NginxServer):
+class NginxFcgi(NginxServer):
 
     backend = FcgiBackend()
 
     def __init__(self, **kwargs):
-        fab.env['fcgi_proccess_count'] = kwargs.pop('worker_count', 2)
         super(NginxServerWithFcgi, self).__init__(**kwargs)
 
     def install_requirements(self):
@@ -277,8 +276,36 @@ class NginxWithFcgi(NginxServer):
                     ' method=prefork'
                     ' pidfile=%(remote_dir)s/run/%(domain)s.pid' % self.env)
 
-NginxServerWithFcgi = NginxWithFcgi
+NginxWithFcgi = NginxFcgi
+NginxServerWithFcgi = NginxFcgi
 
+class FcgiWrapper(NginxFcgi):
+
+    def dirs(self):
+        return super(NginxFcgiWrapperCgi, self).dirs() + ['http']
+
+    def configure(self):
+        #super(NginxWithGunicorn, self).configure()
+
+        upload_first([_('nginx/%(domain)s.fcgi.py'),
+                      'fcgi/wrapper.py'],
+                     _('%(remote_dir)s/http/wrapper.fcgi'),
+                     fab.env,
+                     mode=0755,
+                     use_jinja=True)
+        upload_first([_('nginx/%(domain)s.htaccess'),
+                      'fcgi/.htaccess'],
+                     _('%(remote_dir)s/http/.htaccess'),
+                     fab.env,
+                     use_jinja=True)
+
+    def stop_backend(self):
+        with fab.settings(warn_only=True):
+            fab.run(_("killall -TERM wrapper.fcgi"))
+
+
+    def start_backend(self):
+        fab.run(_('touch %(remote_dir)s/http/wrapper.fcgi'))
 
 class NginxWithGunicorn(NginxServer):
 
