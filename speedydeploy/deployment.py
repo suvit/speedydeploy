@@ -46,15 +46,14 @@ add_fabric_methods = add_class_methods_as_module_level_functions_for_fabric
 def command(func=None, namespace=None, same_name=False, aliases=()):
     def decorator(view_func):
         #@wraps(view_func)
-
         def f(self, *args, **kwargs):
-            namespace = namespace or view_func.__class__.namespace
 
             ns_obj = getattr(fab.env, namespace, fab.env)
             return getattr(ns_obj, view_func.__name__)(*args, **kwargs)
 
         attr_name = '_'.join(filter(None, (namespace,
                                            view_func.__name__)))
+
         setattr(Deployment, attr_name, f)
         if same_name:
             setattr(Deployment, view_func.__name__, f)
@@ -62,6 +61,10 @@ def command(func=None, namespace=None, same_name=False, aliases=()):
         for alias in aliases:
             setattr(Deployment, alias, f)
         return view_func
+
+    if namespace is None:
+        #XXX need more clever solution
+        namespace = inspect.stack()[1][0].f_locals['namespace']
 
     if func:
         return decorator(func)
@@ -120,7 +123,7 @@ class Deployment(object):
     def set_permissions(self, target=None, pattern=None):
         if target is None:
             target = '%(remote_dir)s/%(project_name)s' % fab.env
-        
+
         if pattern is None:
             pattern = 'u+rwX,go+rX,go-w'
 

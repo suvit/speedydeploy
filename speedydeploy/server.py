@@ -16,6 +16,8 @@ class Server(Daemon):
 
     config_dir = None
 
+    namespace = 'server'
+
     def __init__(self, name, domain):
         super(Server, self).__init__(name)
 
@@ -45,12 +47,12 @@ class Server(Daemon):
     def dirs(self):
         return []
 
-    @command(namespace='server')
+    @command
     def start(self, pty=True):
         # TODO inherit daemon start
         pass
 
-    @command(namespace='server')
+    @command
     def stop(self, pty=True):
         # TODO inherit daemon stop
         pass
@@ -59,11 +61,11 @@ class Server(Daemon):
         # TODO inherit daemon restart
         pass
 
-    @command(namespace='server')
+    @command
     def reload(self):
         pass
 
-    @command(namespace='server')
+    @command
     def configure(self):
         pass
 
