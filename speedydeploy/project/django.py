@@ -7,9 +7,12 @@ from fabric.contrib.files import uncomment, comment
 
 from ..base import _
 from ..utils import render_template, upload_template
+from ..deployment import command
 
 
 class DjangoProject(object):
+
+    namespace = 'django'
 
     python_path = '../env/bin/python'
     media_path = '../media'
@@ -78,6 +81,7 @@ class DjangoProject(object):
     def createshop(self):
         self.run('create_shop')
 
+    @command(same_name=True)
     def update_settings_local(self):
         settings_local_path = self.project_path + 'settings_local.py'
 
@@ -125,6 +129,7 @@ class DjangoProject(object):
         else:
             comment(settings_local_path, r'MAINTENANCE_MODE.*')
 
+    @command
     def deploy_static(self):
         self.run('collectstatic -v0 --noinput')
 

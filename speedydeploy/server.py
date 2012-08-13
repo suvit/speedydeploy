@@ -8,6 +8,7 @@ from fabric import api as fab
 from fab_deploy.utils import run_as
 
 from base import _, Daemon
+from deployment import command
 from utils import upload_template, upload_first
 
 
@@ -43,6 +44,29 @@ class Server(Daemon):
 
     def dirs(self):
         return []
+
+    @command(namespace='server')
+    def start(self, pty=True):
+        # TODO inherit daemon start
+        pass
+
+    @command(namespace='server')
+    def stop(self, pty=True):
+        # TODO inherit daemon stop
+        pass
+
+    def restart(self):
+        # TODO inherit daemon restart
+        pass
+
+    @command(namespace='server')
+    def reload(self):
+        pass
+
+    @command(namespace='server')
+    def configure(self):
+        pass
+
 
 
 class Backend(object): #TODO inherit Server
@@ -282,11 +306,9 @@ NginxServerWithFcgi = NginxFcgi
 class FcgiWrapper(NginxFcgi):
 
     def dirs(self):
-        return super(NginxFcgiWrapperCgi, self).dirs() + ['http']
+        return super(FcgiWrapper, self).dirs() + ['http']
 
     def configure(self):
-        #super(NginxWithGunicorn, self).configure()
-
         upload_first([_('nginx/%(domain)s.fcgi.py'),
                       'fcgi/wrapper.py'],
                      _('%(remote_dir)s/http/wrapper.fcgi'),
@@ -298,6 +320,10 @@ class FcgiWrapper(NginxFcgi):
                      _('%(remote_dir)s/http/.htaccess'),
                      fab.env,
                      use_jinja=True)
+        with fab.cd(_('%(remote_dir)s/http')):
+            with fab.settings(warn_only=True):
+                fab.run('ln -s ../media/static')
+                fab.run('ln -s ../media/media')
 
     def stop_backend(self):
         with fab.settings(warn_only=True):

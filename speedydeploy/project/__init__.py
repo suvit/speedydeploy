@@ -13,6 +13,7 @@ from fab_deploy.system import ssh_add_key
 from fab_deploy.utils import run_as
 
 from ..base import _, Daemon, Ubuntu
+from ..deployment import command
 from ..utils import upload_template, upload_first
 
 
@@ -31,6 +32,8 @@ class DNSManager(object):
 class Memcache(Daemon):
 
     pid_file = '/var/run/memcached.pid'
+
+    namespace = 'memcache'
 
     def __init__(self, daemon_name=None):
         if daemon_name is None:
@@ -73,6 +76,15 @@ class Memcache(Daemon):
     def install_requirements(self):
         with fab.cd(_('%(remote_dir)s/')):
             fab.run('env/bin/pip install -U python-memcached')
+
+    @command
+    def configure(self, isnstall=True):
+        memcache = fab.env.memcache
+        if install:
+            memcache.install()
+        else:
+            memcache.update()
+
 
 
 class PyLibMC(Memcache):
@@ -118,6 +130,8 @@ class Celery(Daemon):
 
     broker = None
 
+    namespace = 'celery'
+
     def __init__(self, daemon_name=None):
         if daemon_name is None:
             daemon_name = _('%(instance_name)s_celeryd')
@@ -157,6 +171,14 @@ class Celery(Daemon):
         self.put_config()
         self.restart()
 
+    @command
+    def configure(self, install=False):
+        celery = fab.env.celery
+        if install:
+            celery.install()
+        else:
+            celery.update()
+
     @run_as('root')
     def install_development_libraries(self):
         os = fab.env.os
@@ -164,12 +186,18 @@ class Celery(Daemon):
             self.broker.install_development_libraries(self)
         os.install_package('rabbitmq-server')
 
+    @command
+    def restart(self):
+        return super(Celery, self).restart()
+
 
 class SphinxSearch(Daemon):
 
     version = 'sphinx-0.9.9'
     api_version = 0x116
     # TODO attributes server host and port
+
+    namespace = 'sphinxsearch'
 
     def __init__(self, daemon_name=None):
         if daemon_name is None:
@@ -257,9 +285,18 @@ class SphinxSearch(Daemon):
                               ' >> /home/%(user)s/log/searchd_reindex.log'),
                             marker='sphinx_reindex')
 
+    @command
     def reindex(self, pty=True):
         fab.run(_("%(remote_dir)s/etc/sphinxsearch/index_all.sh"))
         fab.run("%s %s reindex" % (self.os.daemon_restarter, self.name), pty=pty)
+
+    @command
+    def configure(self, install=False, reindex=False):
+        sphinx = fab.env.sphinxsearch
+        if install:
+            sphinx.install(reindex=reindex)
+        else:
+            sphinx.update(reindex=reindex)
 
 
 class SphinxSearch201(SphinxSearch):
@@ -293,7 +330,7 @@ class SphinxSearch203(SphinxSearch202):
 
 
 class LogRotate(object):
-   
+
     config_dir = '/etc/logrotate.d'
 
     def add_script(self, file_name):
@@ -305,18 +342,20 @@ class LogRotate(object):
 
 class CronTab(object):
 
+    namespace = 'crontab'
+
     def set(self, content):
         crontab_set(content)
-    
+
     def show(self):
         crontab_show()
-    
+
     def add(self, content, marker=None):
         crontab_add(content, marker)
 
     def remove(self, marker):
         crontab_remove(marker)
-    
+
     def update(self, content, marker):
         crontab_update(content, marker)
 
@@ -352,6 +391,8 @@ class SuperVisor(Daemon):
     use_celery = False
     use_sphinxsearch = False
 
+    namespace = 'supervisor'
+
     def __init__(self, daemon_name=None):
         if daemon_name is None:
             daemon_name = 'supervisord'
@@ -373,7 +414,7 @@ class SuperVisor(Daemon):
                         use_jinja=True)
 
 
-    def configure(self):
+    def install(self):
         self.configure_daemon()
         upload_template(_('supervisor/%(domain)s.conf'),
                         fab.env.os.path.join(self.config_dir,
@@ -383,6 +424,15 @@ class SuperVisor(Daemon):
 
         #for item in self.manage:
         #    item.configure_supervisor()
+
+    @command
+    def configure(self, install=False):
+        supervisor = fab.env.project.supervisor
+        if install:
+            supervisor.install()
+        else:
+            supervisor.update()
+
 
     def update(self):
         pass
@@ -402,6 +452,8 @@ class SuperVisor(Daemon):
 
 class Project(object):
 
+    namespace = 'project'
+
     use_os = property(lambda self: hasattr(fab.env, 'os'))
     use_cron = property(lambda self: hasattr(fab.env, 'cron'))
     use_server = property(lambda self: hasattr(fab.env, 'server'))
@@ -419,6 +471,7 @@ class Project(object):
     use_pil = True # project depends
     use_pip = True
 
+    @command
     def install(self):
         dirs = ['', 'backup', 'data', 'etc',
                 'log', 'media', 'run',
@@ -443,6 +496,7 @@ class Project(object):
         for directory in dirs:
             os.mkdir(os.path.join(_('%(remote_dir)s'), directory))
 
+    @command(same_name=True, aliases=('update_virtual_env',))
     def install_requirements(self):
         if self.use_server:
             fab.env.server.install_requirements()
@@ -457,6 +511,7 @@ class Project(object):
         if self.use_django:
             self.django.install_requirements()
 
+    @command(same_name=True)
     def update_reqs(self):
         with fab.cd(_('%(remote_dir)s/')):
             if exists(_("%(project_name)s/requirements.txt")):
@@ -464,6 +519,7 @@ class Project(object):
                           " %(project_name)s/requirements.txt"))
 
     @run_as('root')
+    @command(same_name=True)
     def install_development_libraries(self):
         os = fab.env.os
 
@@ -486,6 +542,7 @@ class Project(object):
                 getattr(fab.env, name).install_development_libraries()
 
     @run_as('root')
+    @command(same_name=True)
     def install_setuptools(self):
         os = fab.env.os.install_package("python-setuptools build-essential")
 
@@ -493,9 +550,11 @@ class Project(object):
         fab.sudo("easy_install pip")
 
     @run_as('root')
+    @command(same_name=True)
     def install_virtualenv(self):
         fab.sudo("easy_install virtualenv")
 
+    @command(same_name=True)
     def create_env(self):
         with fab.cd(_('%(remote_dir)s')):
             fab.run("virtualenv env")

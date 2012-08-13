@@ -7,12 +7,14 @@ from fabric.contrib.files import exists
 from fab_deploy.utils import run_as
 
 from base import _, Daemon
+from deployment import command
 
 
 class VCS(object):
     def install_development_libraries(self):
         pass
 
+    @command(namespace='vcs', aliases=('deploy',))
     def deploy(self, force_remove=False):
         if exists(_('%(remote_dir)s/%(project_name)s')) and not force_remove:
             with fab.cd(_('%(remote_dir)s/%(project_name)s/')):

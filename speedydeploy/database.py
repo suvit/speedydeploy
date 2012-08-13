@@ -10,18 +10,23 @@ from fab_deploy.mysql import mysql_execute, mysql_create_user, \
 from fab_deploy.utils import run_as
 
 from base import Daemon
+from deployment import command
 
 
 class Database(object):
     name = None
     version = None
 
+    namespace = 'db'
+
     def execute(self, sql):
         raise NotImplementedError
 
+    @command
     def create_user(self, user, password):
         raise NotImplementedError
 
+    @command
     def create_db(self, db, user, password, create_user=True):
         raise NotImplementedError
 
@@ -31,8 +36,13 @@ class Database(object):
     def install_development_libraries(self):
         pass
 
+    @command
     def install(self):
         self.install_development_libraries()
+
+    @command
+    def backup(self):
+        pass
 
 
 class DatabaseDaemon(Daemon, Database):

@@ -3,6 +3,7 @@ from __future__ import with_statement
 import os
 import posixpath as os_path
 import ntpath as nt_path
+from functools import wraps
 
 from fabric import api as fab
 from fabric.contrib import files as fab_files
