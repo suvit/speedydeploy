@@ -78,13 +78,12 @@ class Memcache(Daemon):
             fab.run('env/bin/pip install -U python-memcached')
 
     @command
-    def configure(self, isnstall=True):
+    def configure(self, install=True):
         memcache = fab.env.memcache
         if install:
             memcache.install()
         else:
             memcache.update()
-
 
 
 class PyLibMC(Memcache):

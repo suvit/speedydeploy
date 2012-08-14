@@ -15,4 +15,5 @@ runfastcgi(['method=prefork',
             "minspare=1",
             "maxspare={{worker_count|default('2')}}",
             "maxchildren=0",
+            "errlog={{remote_dir}}/log/fcgi.log",
             "pidfile={{remote_dir}}/run/fcgi.pid"])
