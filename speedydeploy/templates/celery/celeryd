@@ -3,9 +3,9 @@
 #  celeryd - Starts the Celery worker daemon.
 # ============================================
 #
-# :Usage: /etc/init.d/%(user)s_celeryd {start|stop|force-reload|restart|try-restart|status}
+# :Usage: /etc/init.d/{{user}}_celeryd {start|stop|force-reload|restart|try-restart|status}
 #
-# :Configuration file: /home/%(user)s/%(project_name)s/etc/celery/celeryd.conf
+# :Configuration file: /home/{{user}}/{{project_name}}/etc/celery/celeryd.conf
 #
 # To configure celeryd you probably need to tell it where to chdir.
 #
@@ -72,7 +72,7 @@
 #       Full path to the virtualenv environment to activate. Default is none.
 
 ### BEGIN INIT INFO
-# Provides:          %(user)s_celeryd
+# Provides:          {{user}}_celeryd
 # Required-Start:    $network $local_fs $remote_fs
 # Required-Stop:     $network $local_fs $remote_fs
 # Default-Start:     2 3 4 5
@@ -82,16 +82,16 @@
 
 set -e
 
-DEFAULT_CELERYD="/home/%(user)s/env/celeryd"
+DEFAULT_CELERYD="/home/{{user}}/env/celeryd"
 
 # /etc/init.d/ssh: start and stop the celery task worker daemon.
 
-if test -f /home/%(user)s/%(project_name)s/etc/celery/celeryd.conf; then
-    . /home/%(user)s/%(project_name)s/etc/celery/celeryd.conf
+if test -f /home/{{user}}/{{project_name}}/etc/celery/celeryd.conf; then
+    . /home/{{user}}/{{project_name}}/etc/celery/celeryd.conf
 fi
 
-CELERYD_LOG_FILE=${CELERYD_LOG_FILE:-${CELERYD_LOGFILE:-"/var/log/%(user)s_celeryd.log"}}
-CELERYD_PID_FILE=${CELERYD_PID_FILE:-${CELERYD_PIDFILE:-"/var/run/%(user)s_celeryd.pid"}}
+CELERYD_LOG_FILE=${CELERYD_LOG_FILE:-${CELERYD_LOGFILE:-"/var/log/{{user}}_celeryd.log"}}
+CELERYD_PID_FILE=${CELERYD_PID_FILE:-${CELERYD_PIDFILE:-"/var/run/{{user}}_celeryd.pid"}}
 CELERYD_LOG_LEVEL=${CELERYD_LOG_LEVEL:-${CELERYD_LOGLEVEL:-"INFO"}}
 
 CELERYD=${CELERYD:-$DEFAULT_CELERYD}
@@ -226,7 +226,7 @@ case "$1" in
     ;;
 
   *)
-    log_action_msg "Usage: /etc/init.d/%(user)s_celeryd {start|stop|force-reload|restart|try-restart|status}"
+    log_action_msg "Usage: /etc/init.d/{{user}}_celeryd {start|stop|force-reload|restart|try-restart|status}"
     exit 1
 esac
 
