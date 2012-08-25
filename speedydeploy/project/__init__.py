@@ -383,55 +383,60 @@ class Scrapy(object):
         fab.env.os.install_package('libxml2 libxml2-dev libxslt-dev')
 
 
-class SuperVisor(Daemon):
+class SuperVisorD(Daemon):
 
     config_dir = '/etc/supervisor/'
+
+    namespace = 'supervisord'
+
+    def __init__(self, daemon_name=None):
+        if daemon_name is None:
+            daemon_name = 'supervisord'
+        super(SuperVisorD, self).__init__(daemon_name)
+
+    @run_as('root')
+    def install_development_libraries(self):
+        fab.env.os.install_package('supervisor')
+
+    @command
+    @run_as('root')
+    def configure(self):
+        upload_template(_('supervisor/supervisord.conf'),
+                        '/etc/supervisor/supervisord.conf',
+                        fab.env,
+                        use_jinja=True)
+
+
+class SuperVisor(object):
+
     use_gunicorn = False
     use_celery = False
     use_sphinxsearch = False
 
     namespace = 'supervisor'
 
-    def __init__(self, daemon_name=None):
-        if daemon_name is None:
-            daemon_name = 'supervisord'
-        super(SuperVisor, self).__init__(daemon_name)
-        self.listerners = []
+    def __init__(self):
+        self.listeners = []
 
     def dirs(self):
         return ['etc/supervisor']
 
-    @run_as('root')
-    def install_development_libraries(self):
-        fab.env.os.install_package('supervisor')
+    def watch(self, item):
+        item.supervisor = True
+        self.listeners.append(item)
 
-    @run_as('root')
-    def configure_daemon(self):
-        upload_template(_('supervisor/supervisord.conf'),
-                        _('%(remote_path)s/etc/supervisor/%(domain)s.conf'),
-                        fab.env,
-                        use_jinja=True)
-
-
+    @command
     def install(self):
-        self.configure_daemon()
-        upload_template(_('supervisor/%(domain)s.conf'),
-                        fab.env.os.path.join(self.config_dir,
-                                             _('%(domain)s.conf')),
-                        fab.env,
-                        use_jinja=True)
-
-        #for item in self.manage:
-        #    item.configure_supervisor()
+        for item in self.listeners:
+            item.configure()  # reconfigure with supervisor=True
+            item.configure_supervisor()
 
     @command
     def configure(self, install=False):
-        supervisor = fab.env.project.supervisor
         if install:
-            supervisor.install()
+            self.install()
         else:
-            supervisor.update()
-
+            self.update()
 
     def update(self):
         pass
@@ -463,7 +468,7 @@ class Project(object):
     use_vcs = property(lambda self: hasattr(fab.env, 'vcs'))
     use_logrotate = property(lambda self: hasattr(fab.env, 'logrotate'))
 
-    use_supervisor = property(lambda self: hasattr(self, 'supervisor'))
+    use_supervisor = property(lambda self: hasattr(fab.env, 'supervisor'))
     use_scrapy = property(lambda self: hasattr(self, 'scrapy'))
     use_django = property(lambda self: hasattr(self, 'django'))
 

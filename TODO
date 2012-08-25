@@ -1,6 +1,3 @@
 write README and other docs
 write some tests
 write examples
-
-added auto settings methods to Deployment from derived objects
-rename Server class and instances to WebServer
