@@ -22,6 +22,8 @@ class SphinxSearch(Daemon):
 
     namespace = 'sphinxsearch'
 
+    supervisor = False
+
     def __init__(self, daemon_name=None):
         if daemon_name is None:
             daemon_name = _('%(instance_name)s_searchd')
@@ -33,20 +35,24 @@ class SphinxSearch(Daemon):
                ]
 
     @run_as('root')
+    def configure_daemon(self):
+        if not self.supervisor:
+            # common template
+            upload_template('sphinxsearch/searchd',
+                            _("/etc/init.d/%(instance_name)s_searchd"),
+                            context=fab.env,
+                            use_sudo=True,
+                            use_jinja=True,
+                            mode=0755,
+                           )
+
     def put_config(self):
+        self.configure_daemon()
+
         upload_template("sphinxsearch/sphinx.conf",
                         _("%(remote_dir)s/etc/sphinxsearch/sphinx.conf"),
                         fab.env,
                         use_jinja=True)
-
-        # common template
-        upload_template('sphinxsearch/searchd',
-                        _("/etc/init.d/%(instance_name)s_searchd"),
-                        context=fab.env,
-                        use_sudo=True,
-                        use_jinja=True,
-                        mode=0755,
-                       )
 
         upload_template("sphinxsearch/index_all.sh",
                         _("%(remote_dir)s/etc/sphinxsearch/index_all.sh"),
@@ -121,6 +127,17 @@ class SphinxSearch(Daemon):
             sphinx.install(reindex=reindex)
         else:
             sphinx.update(reindex=reindex)
+
+    def supervisor_start(self, pty=False):
+        pass
+
+    def supervisor_configure(self):
+        upload_first([_('sphinxsearch/%(domain)s.conf'),
+                      'sphinxsearch/supervisor.conf',
+                     ],
+                     _('%(remote_dir)s/etc/supervisor/sphinxsearch.conf'),
+                     fab.env,
+                     use_jinja=True)
 
 
 class SphinxSearch201(SphinxSearch):
