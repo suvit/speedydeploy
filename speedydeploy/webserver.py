@@ -199,13 +199,16 @@ class Gunicorn(Backend):
                      fab.env,
                      use_jinja=True)
 
-    def configure_supervisor(self):
+    def supervisor_configure(self):
         upload_first([_('gunicorn/%(domain)s.supervisor.conf'),
                       'gunicorn/supervisor.conf',
                      ],
                      _('%(remote_dir)s/etc/supervisor/gunicorn.conf'),
                      fab.env,
                      use_jinja=True)
+
+    def supervisor_start(self):
+        pass
 
 
 class WsgiBackend(Backend):

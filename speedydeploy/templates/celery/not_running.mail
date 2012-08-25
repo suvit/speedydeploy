@@ -1,0 +1,2 @@
+To: {{ admin_email }}
+Subject: {{ user }} Celery NOT runing

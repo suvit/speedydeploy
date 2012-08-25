@@ -16,6 +16,11 @@ from ..base import _, Daemon, Ubuntu
 from ..deployment import command
 from ..utils import upload_template, upload_first
 
+from celery import RabbitMQ, Celery
+from sphinxsearch import *
+from supervisor import SuperVisorD, SuperVisor
+from cron import CronTab
+
 
 class DNSManager(object):
     # class for easy create subdomains
@@ -107,227 +112,6 @@ class PyLibMC(Memcache):
             fab.run('env/bin/pip install -e git://github.com/jbalogh/django-pylibmc.git#egg=django-pylibmc')
 
 
-class RabbitMQ(Daemon):
-    def __init__(self, daemon_name=None):
-        if daemon_name is None:
-            daemon_name = 'rabbitmq-server'
-        super(RabbitMQ, self).__init__(daemon_name)
-
-    @run_as('root')
-    def install_development_libraries(self):
-        os = fab.env.os
-        os.install_package('rabbitmq-server')
-
-        fab.run(_('rabbitmqctl add_user %(user)s %(mq_pass)s'))
-        fab.run(_('rabbitmqctl add_vhost %(domain)s'))
-        fab.run(_('rabbitmqctl set_permissions'
-                  ' -p %(domain)s %(user)s'
-                  ' ".*" ".*" ".*"'))
-
-
-class Celery(Daemon):
-
-    broker = None
-
-    namespace = 'celery'
-
-    def __init__(self, daemon_name=None):
-        if daemon_name is None:
-            daemon_name = _('%(instance_name)s_celeryd')
-        super(Celery, self).__init__(daemon_name)
-
-    def dirs(self):
-        return ['etc/celery']
-
-    @run_as('root')
-    def put_config(self):
-
-        upload_template('celery/celeryd',
-                        _("/etc/init.d/%(instance_name)s_celeryd"),
-                        context=fab.env,
-                        use_sudo=True,
-                        use_jinja=True,
-                        mode=0755,
-                       )
-
-        upload_template('celery/celeryd.conf',
-                        _("%(remote_dir)s/etc/celery/"),
-                        context=fab.env,
-                        use_jinja=True,
-                       )
-
-    @run_as('root')
-    def install(self):
-        self.put_config()
-
-        #fab.sudo(_("chown %(user)s:%(user)s %(remote_dir)s/etc/celery/"))
-
-        with fab.settings(warn_only=True):
-            self.stop()
-        self.start()
-
-    def update(self):
-        self.put_config()
-        self.restart()
-
-    @command
-    def configure(self, install=False):
-        celery = fab.env.celery
-        if install:
-            celery.install()
-        else:
-            celery.update()
-
-    @run_as('root')
-    def install_development_libraries(self):
-        os = fab.env.os
-        if self.broker:
-            self.broker.install_development_libraries(self)
-        os.install_package('rabbitmq-server')
-
-    @command
-    def restart(self):
-        return super(Celery, self).restart()
-
-
-class SphinxSearch(Daemon):
-
-    version = 'sphinx-0.9.9'
-    api_version = 0x116
-    # TODO attributes server host and port
-
-    namespace = 'sphinxsearch'
-
-    def __init__(self, daemon_name=None):
-        if daemon_name is None:
-            daemon_name = _('%(instance_name)s_searchd')
-        super(SphinxSearch, self).__init__(daemon_name)
-
-    def dirs(self):
-        return ["data/sphinxsearch/",
-                "etc/sphinxsearch/"
-               ]
-
-    @run_as('root')
-    def put_config(self):
-        upload_template("sphinxsearch/sphinx.conf",
-                        _("%(remote_dir)s/etc/sphinxsearch/sphinx.conf"),
-                        fab.env,
-                        use_jinja=True)
-
-        # common template
-        upload_template('sphinxsearch/searchd',
-                        _("/etc/init.d/%(instance_name)s_searchd"),
-                        context=fab.env,
-                        use_sudo=True,
-                        use_jinja=True,
-                        mode=0755,
-                       )
-
-        upload_template("sphinxsearch/index_all.sh",
-                        _("%(remote_dir)s/etc/sphinxsearch/index_all.sh"),
-                        fab.env,
-                        use_jinja=True,
-                        mode=0755,
-                        )
-
-    @run_as('root')
-    def install_package(self):
-        #fab.env.os.install_package('sphinxsearch')
-        fab.run('wget http://sphinxsearch.com/files/%s.tar.gz' % self.version)
-        fab.run('tar -xzf %s.tar.gz' % self.version)
-        with fab.cd('%s' % self.version):
-            configure = './configure'
-            if fab.env.db.name != 'mysql':
-                configure += ' --without-mysql'
-            fab.run(configure)
-            fab.run('make')
-            fab.run('make install')
-        fab.run('rm -Rf %s %s.tar.gz' % (self.version, self.version))
-
-    @run_as('root')
-    def install_development_libraries(self):
-        os = fab.env.os
-
-        os.install_package('libxml2 libxml2-dev')
-        os.install_package('libexpat1 libexpat1-dev')
-
-        fab.env.db.install_headers()
-
-    @run_as('root')
-    def install(self, reindex=False):
-        with fab.settings(warn_only=True):
-            self.stop()
-
-        self.install_development_libraries()
-        self.install_package()
-
-        self.put_config()
-        
-        if reindex:
-            self.reindex()
-
-        self.start()
-
-    def update(self, reindex=False):
-        self.put_config()
-
-        if reindex:
-            self.reindex()
-
-        self.restart()
-
-    def update_cron(self):
-        fab.env.setdefault('sphinxsearch_time', '10 *')
-        fab.env.cron.update(_('%(sphinxsearch_time)s * * *'
-                              ' %(remote_dir)s/etc/sphinxsearch/index_all.sh'
-                              ' >> /home/%(user)s/log/searchd_reindex.log'),
-                            marker='sphinx_reindex')
-
-    @command
-    def reindex(self, pty=True):
-        fab.run(_("%(remote_dir)s/etc/sphinxsearch/index_all.sh"))
-        fab.run("%s %s reindex" % (self.os.daemon_restarter, self.name), pty=pty)
-
-    @command
-    def configure(self, install=False, reindex=False):
-        sphinx = fab.env.sphinxsearch
-        if install:
-            sphinx.install(reindex=reindex)
-        else:
-            sphinx.update(reindex=reindex)
-
-
-class SphinxSearch201(SphinxSearch):
-    version = 'sphinx-2.0.1'
-
-
-class SphinxSearch202(SphinxSearch201):
-
-    version = 'sphinx-2.0.2-beta'
-
-    use_deb = property(lambda: isinstance(fab.env.os, Ubuntu))
-
-    @run_as('root')
-    def install_package(self):
-        if self.use_deb:
-            filename = '%s-lucid_i386.deb' %\
-                       self.version.replace('sphinx', 'sphinxsearch')
-
-            fab.run('wget http://sphinxsearch.com/files/%s' % filename)
-            try:
-                fab.run('dpkg -I %s' % filename)
-            finally:
-                fab.run('rm -R %s' % filename)
-        else:
-            super(self, SphinxSearch201).install_package()
-
-
-class SphinxSearch203(SphinxSearch202):
-
-    version = 'sphinx-2.0.3-release'
-
-
 class LogRotate(object):
 
     config_dir = '/etc/logrotate.d'
@@ -337,35 +121,6 @@ class LogRotate(object):
                 fab.env.os.path.join(self.config_dir,
                                      _('%(user)s')),
                 use_sudo=True)
-
-
-class CronTab(object):
-
-    namespace = 'crontab'
-
-    def set(self, content):
-        crontab_set(content)
-
-    def show(self):
-        crontab_show()
-
-    def add(self, content, marker=None):
-        crontab_add(content, marker)
-
-    def remove(self, marker):
-        crontab_remove(marker)
-
-    def update(self, content, marker):
-        crontab_update(content, marker)
-
-    def add_many(self, tabs):
-        pass# TODO
-
-    def update_many(self, tabs):
-        pass # TODO
-
-    def remove_many(self, markers):
-        pass# TODO
 
 
 class Scrapy(object):
@@ -383,77 +138,6 @@ class Scrapy(object):
         fab.env.os.install_package('libxml2 libxml2-dev libxslt-dev')
 
 
-class SuperVisorD(Daemon):
-
-    config_dir = '/etc/supervisor/'
-
-    namespace = 'supervisord'
-
-    def __init__(self, daemon_name=None):
-        if daemon_name is None:
-            daemon_name = 'supervisord'
-        super(SuperVisorD, self).__init__(daemon_name)
-
-    @run_as('root')
-    def install_development_libraries(self):
-        fab.env.os.install_package('supervisor')
-
-    @command
-    @run_as('root')
-    def configure(self):
-        upload_template(_('supervisor/supervisord.conf'),
-                        '/etc/supervisor/supervisord.conf',
-                        fab.env,
-                        use_jinja=True)
-
-
-class SuperVisor(object):
-
-    use_gunicorn = False
-    use_celery = False
-    use_sphinxsearch = False
-
-    namespace = 'supervisor'
-
-    def __init__(self):
-        self.listeners = []
-
-    def dirs(self):
-        return ['etc/supervisor']
-
-    def watch(self, item):
-        item.supervisor = True
-        self.listeners.append(item)
-
-    @command
-    def install(self):
-        for item in self.listeners:
-            item.configure()  # reconfigure with supervisor=True
-            item.configure_supervisor()
-
-    @command
-    def configure(self, install=False):
-        if install:
-            self.install()
-        else:
-            self.update()
-
-    def update(self):
-        pass
-
-    def start(self):
-        pass
-
-    def stop(self):
-        pass
-
-    def restart(self):
-        pass
-
-    def reload(self):
-        pass
-
-
 class Project(object):
 
     namespace = 'project'
@@ -469,7 +153,7 @@ class Project(object):
     use_logrotate = property(lambda self: hasattr(fab.env, 'logrotate'))
 
     use_supervisor = property(lambda self: hasattr(fab.env, 'supervisor'))
-    use_scrapy = property(lambda self: hasattr(self, 'scrapy'))
+    use_scrapy = property(lambda self: hasattr(fab.env, 'scrapy'))
     use_django = property(lambda self: hasattr(self, 'django'))
 
     use_pil = True # project depends

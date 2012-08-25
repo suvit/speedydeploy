@@ -1,5 +1,6 @@
-include .gitignore
 include LICENSE
 include NOTICE
+include README
 include THANKS
+include TODO
 recursive-include speedydeploy/templates *

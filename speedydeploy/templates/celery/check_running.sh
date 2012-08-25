@@ -1,0 +1,1 @@
+/etc/init.d/{{user}}_celeryd start && cat /home/{{user}}/utils/celery_not_running.mail | /usr/sbin/sendmail {{ admin_email }}
