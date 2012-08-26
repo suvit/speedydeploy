@@ -1,4 +1,4 @@
 SPHINX_API_VERSION = {{sphinxsearch.api_version|default('0x116')}}
-SPHINX_ROOT = "{{sphinxsearch.host|default('localhost')}}"
-SPHINX_HOST = "/home/{{user}}/run/searchd.sock"
-SPHINX_PORT = {{sphinxsearch.port|default('11312')}}
+SPHINX_ROOT = "/home/{{user}}/data/sphinxsearch/"
+SPHINX_SERVER = "{{sphinxsearch.host|default("/home/%s/run/searchd.sock" % user)}}"
+SPHINX_PORT = {{sphinxsearch.port|default(None)}}
