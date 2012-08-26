@@ -21,8 +21,6 @@
 # Short-Description: Start daemon at boot time
 ### END INIT INFO
 
-SUDO_USER={{user}}
-
 PID_FILE='/home/{{user}}/run/searchd.pid'
 CONFIG_FILE=/home/{{user}}/etc/sphinxsearch/sphinx.conf
 EXEC_PATH=/usr/local/bin
@@ -31,7 +29,7 @@ prog="searchd"
 
 do_start() {
     echo "Starting $prog"
-    sudo -u $SUDO_USER $EXEC_PATH/$prog --config $CONFIG_FILE
+    $EXEC_PATH/$prog --config $CONFIG_FILE
     RETVAL=$?
     echo
     return $RETVAL
@@ -40,7 +38,7 @@ do_start() {
 do_stop() {
     echo "Stopping $prog"
     if [ -e $PID_FILE ] ; then
-        sudo -u $SUDO_USER $EXEC_PATH/$prog --stop --config $CONFIG_FILE
+        $EXEC_PATH/$prog --stop --config $CONFIG_FILE
         sleep 2
         if [ -e $PID_FILE ] ; then
             echo "WARNING: searchd may still be alive: $PID_FILE"
@@ -54,7 +52,7 @@ do_stop() {
 do_status() {
     RETVAL=$?
     if [ -e $PID_FILE ] ; then
-        sudo -u $SUDO_USER $EXEC_PATH/$prog --status --config $CONFIG_FILE
+        $EXEC_PATH/$prog --status --config $CONFIG_FILE
         echo "---"
         echo "$prog is running (`cat $PID_FILE`)"
     else
@@ -65,10 +63,10 @@ do_status() {
 
 do_reindex() {
     echo "Reindexing all $prog indices"
-        if [ -e $PID_FILE ]  ; then
-        sudo -u $SUDO_USER $EXEC_PATH/indexer --all --rotate --config $CONFIG_FILE
+    if [ -e $PID_FILE ]  ; then
+      $EXEC_PATH/indexer --all --rotate --config $CONFIG_FILE
     else
-        sudo -u $SUDO_USER $EXEC_PATH/indexer --all --config $CONFIG_FILE
+      $EXEC_PATH/indexer --all --config $CONFIG_FILE
     fi
     echo "done."
     echo

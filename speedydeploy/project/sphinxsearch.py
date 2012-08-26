@@ -117,8 +117,6 @@ class SphinxSearch(Daemon):
     @command
     def reindex(self, pty=True):
         fab.run(_("%(remote_dir)s/etc/sphinxsearch/index_all.sh"))
-        fab.run("%s %s reindex" % (self.os.daemon_restarter,
-                                   self.name), pty=pty)
 
     @command
     def configure(self, install=False, reindex=False):
