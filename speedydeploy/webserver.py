@@ -25,20 +25,38 @@ class FrontEnd(Daemon):
 
         self.env = fab.env
         self.env['domain'] = domain
+        self.env['server_dir'] = self.config_dir
 
     def enable_site(self, name):
         server_dir = self.config_dir
         fab.sudo("ln -s %(server_dir)ssites-available/%(name)s"
                  " %(server_dir)ssites-enabled/%(name)s" % locals() )
 
+    @command
+    @run_as('root')
+    def enable(self):
+        fab.run(_("ln -s %(server_dir)ssites-available/%(domain)s.conf"
+                  " %(server_dir)ssites-enabled/%(domain)s.conf"))
+
     def disable_site(self, name):
         server_dir = self.config_dir
         fab.sudo("rm -f %(server_dir)ssites-enabled/%(name)s" % locals() )
+
+    @command
+    @run_as('root')
+    def disable(self):
+        fab.run(_("rm -f %(server_dir)ssites-enabled/%(domain)s.conf"))
 
     def remove_site(self, name):
         self.disable_site(name)
         server_dir = self.config_dir
         fab.sudo("rm -f %(server_dir)ssites-available/%(name)s" % locals() )
+
+    @command
+    @run_as('root')
+    def remove(self):
+        self.disable()
+        fab.run(_("rm -f %(server_dir)ssites-available/%(domain)s.conf"))
 
     def install_development_libraries(self):
         if self.backend:
@@ -64,6 +82,7 @@ class FrontEnd(Daemon):
         # TODO inherit daemon stop
         pass
 
+    @command
     def restart(self):
         # TODO inherit daemon restart
         pass

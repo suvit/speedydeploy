@@ -60,6 +60,13 @@ class SuperVisor(object):
         self.listeners.append(item)
 
     @command
+    def unwatch(self, item=None):
+        if item is None:
+            fab.run(_('rm -R %(remote_dir)s/etc/supervisor'))
+        else:
+            fab.run(_('rm -R %(remote_dir)s/etc/supervisor') + '/%s.conf' % item)
+
+    @command
     def install(self):
         for item in self.listeners:
             item.configure()  # reconfigure with supervisor=True
