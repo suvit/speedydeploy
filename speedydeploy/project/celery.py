@@ -54,19 +54,19 @@ class Celery(Daemon):
     def dirs(self):
         return ['etc/celery']
 
+    @command
     @run_as('root')
     def configure_daemon(self):
-
-        if not self.supervisor:
-            upload_template('celery/celeryd',
-                            _("/etc/init.d/%(instance_name)s_celeryd"),
-                            context=fab.env,
-                            use_jinja=True,
-                            mode=0755,
-                           )
+        upload_template('celery/celeryd',
+                        _("/etc/init.d/%(instance_name)s_celeryd"),
+                        context=fab.env,
+                        use_jinja=True,
+                        mode=0755,
+                       )
 
     def put_config(self):
-        self.configure_daemon()
+        if not self.supervisor:
+            self.configure_daemon()
 
         upload_template('celery/celeryd.conf',
                         _("%(remote_dir)s/etc/celery/"),

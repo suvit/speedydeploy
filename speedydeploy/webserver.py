@@ -84,6 +84,10 @@ Server = WebServer # TODO remove this
 class Backend(object): #TODO inherit Server
     name = NotImplemented
 
+    def __init__(self, domain=None):
+        if domain is not None:
+            fab.env['domain'] = domain
+
     def start(self):
         pass
 
@@ -117,7 +121,7 @@ class FcgiBackend(Backend):
         fab.run(_('touch %(remote_dir)s/http/wrapper.fcgi'))
 
 
-class FcgiWrapperBackend(FcgiBackend):
+class FcgiWrapper(FcgiBackend):
 
     def dirs(self):
         return ['http']
@@ -355,7 +359,7 @@ NginxServer = Nginx
 
 class Apache2ServerWithFcgi(Apache2Server):
 
-    backend = FcgiBackend()
+    backend = FcgiBackend
 
     def local_path(self, path=''):
         return os.path.abspath(os.path.join(os.path.dirname(__file__),
@@ -402,7 +406,7 @@ class Apache2ServerWithFcgi(Apache2Server):
 
 class Apache2ServerWithWsgi(Apache2Server):
 
-    backend = WsgiBackend()
+    backend = WsgiBackend
 
     def configure(self):
         self.backend.configure()
@@ -411,7 +415,7 @@ class Apache2ServerWithWsgi(Apache2Server):
 
 class NginxFcgi(NginxServer):
 
-    backend = FcgiBackend()
+    backend = FcgiBackend
 
     def __init__(self, **kwargs):
         super(NginxServerWithFcgi, self).__init__(**kwargs)
@@ -426,13 +430,11 @@ class NginxFcgi(NginxServer):
 NginxWithFcgi = NginxFcgi
 NginxServerWithFcgi = NginxFcgi
 
-class FcgiWrapper(NginxFcgi):
-
-    backend = FcgiWrapperBackend
 
 class NginxWithGunicorn(NginxServer):
 
     backend = Gunicorn
+
 
 class NginxWithUwsgi(NginxServer):
 

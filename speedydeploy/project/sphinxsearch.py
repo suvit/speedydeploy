@@ -34,20 +34,20 @@ class SphinxSearch(Daemon):
                 "etc/sphinxsearch/"
                ]
 
+    @command
     @run_as('root')
     def configure_daemon(self):
-        if not self.supervisor:
-            # common template
-            upload_template('sphinxsearch/searchd',
-                            _("/etc/init.d/%(instance_name)s_searchd"),
-                            context=fab.env,
-                            use_sudo=True,
-                            use_jinja=True,
-                            mode=0755,
-                           )
+        upload_template('sphinxsearch/searchd',
+                        _("/etc/init.d/%(instance_name)s_searchd"),
+                        context=fab.env,
+                        use_sudo=True,
+                        use_jinja=True,
+                        mode=0755,
+                       )
 
     def put_config(self):
-        self.configure_daemon()
+        if not self.supervisor:
+            self.configure_daemon()
 
         upload_template("sphinxsearch/sphinx.conf",
                         _("%(remote_dir)s/etc/sphinxsearch/sphinx.conf"),
