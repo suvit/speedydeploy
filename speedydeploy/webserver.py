@@ -205,7 +205,7 @@ class Gunicorn(Backend):
             fab.env['gunicorn_starter'] = _('gunicorn '
                                             '%(project_name)s:application')
 
-        with fab.cd('%(project_path)s'):
+        with fab.cd(_('%(project_path)s')):
             fab.run(_('%(remote_dir)s/env/bin/%(gunicorn_starter)s'
                       ' -c %(remote_dir)s/etc/gunicorn/conf.py'))
 
