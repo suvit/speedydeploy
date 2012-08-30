@@ -35,6 +35,10 @@ class CronTab(object):
     def update(self, content, marker):
         crontab_update(content, marker)
 
+    @command
+    def clear(self):
+        fab.run('crontab -r')
+
     def add_many(self, tabs):
         pass# TODO
 
