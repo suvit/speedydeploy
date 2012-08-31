@@ -48,8 +48,9 @@ class PersonaProduction(Deployment):
         fab.env.domain_aliases = ['persona1.ru',
                                   'persona.progway.ru']
         backend = fab.env.backend = fab.env.server.backend = Gunicorn()
+
         fab.env.db = MysqlDatabase()
-        fab.env.db_pass = '97Vq63BSeH'
+        fab.env.db_pass = 'hidden'
 
         fab.env.vcs = SVN()
 
