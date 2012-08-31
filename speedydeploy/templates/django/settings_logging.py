@@ -1,7 +1,7 @@
 import os
 
 LOG_DIRNAME = locals().get('LOG_DIRNAME', '{{remote_dir}}/log/')
-LOG_FILENAME = locals().get('LOG_FILENAME', 'shop.log')
+LOG_FILENAME = locals().get('LOG_FILENAME', 'main.log')
 
 LOGGING = {
     'version': 1,
