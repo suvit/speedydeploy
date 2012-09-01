@@ -1,1 +1,3 @@
 django-fab-deploy>=0.7.4
+
+#fabric is inside d-f-d
