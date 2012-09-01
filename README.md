@@ -82,6 +82,6 @@ Installing
 
    ```
 
-3. run ```fab node4 create``` TODO
+3. run ```fab node4 create```
 
 4. run ```fab node4 update_cron```

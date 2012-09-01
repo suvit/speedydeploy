@@ -140,3 +140,19 @@ class Deployment(object):
         self.create_env()
         self.deploy()
         self.update_virtual_env()
+
+    def create(self, key=None):
+        if key:
+            self.update_rsa_key(key) # for root
+
+        self.os_add_user()
+        if key:
+            self.ssh_add_key(key)
+
+        self.db_create_user(fab.env.user, fab.env.db_pass)
+        self.db_create_db(fab.env.user, fab.env.db_pass)
+
+        self.create_virtual_env()
+
+        # need setting for this
+        fab.run(_('echo root > %(remote_dir)s/.forward'))
