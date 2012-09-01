@@ -4,7 +4,7 @@ Installing
 
 1. ```pip install speedydeploy```
 
-2. create deploy dir in your project. and added fabfile.py to it.
+2. create ```deploy``` dir in your project. and added fabfile.py to it.
 
 Example fabfile.py:
 
@@ -17,7 +17,7 @@ import fabric.api as fab
 
 from fab_deploy import update_env as fab_update_env, run_as
 
-from speedydeploy.deployment import _
+from speedydeploy.deployment import _, Deployment
 from speedydeploy.project import (CronTab, Project, SphinxSearch,
                                   SuperVisor, SuperVisorD)
 from speedydeploy.project.django import DjangoProject
@@ -26,13 +26,14 @@ from speedydeploy.database import MysqlDatabase
 from speedydeploy.server import Nginx, Gunicorn
 from speedydeploy.vcs import SVN
 
+
 class PersonaProduction(Deployment):
 
     def node4(self):
         fab.env.hosts = ["persona@node4.hidden.ru"]
-        fab.env.project_name = "personashop"
-
         fab.env.user = "persona"
+
+        fab.env.project_name = "personashop"
         fab.env.remote_dir = _("/home/%(user)s")
         fab.env.instance_name = fab.env.user
 
@@ -44,21 +45,20 @@ class PersonaProduction(Deployment):
                                               )
 
         fab.env.server = Nginx(domain='www.persona1.ru')
+        fab.env.domain_aliases = ['persona1.ru']
+
+        fab.env.backend = fab.env.server.backend = Gunicorn()
         fab.env.worker_count = 1
-        fab.env.domain_aliases = ['persona1.ru',
-                                  'persona.progway.ru']
-        backend = fab.env.backend = fab.env.server.backend = Gunicorn()
 
         fab.env.db = MysqlDatabase()
         fab.env.db_pass = 'hidden'
 
         fab.env.vcs = SVN()
-
         fab.env.svn_path = 'https://code.hidden.ru/path/to/project/'
         fab.env.svn_rev = 'HEAD'
 
         fab.env.supervisor = SuperVisor()
-        fab.env.supervisor.watch(backend)
+        fab.env.supervisor.watch(fab.env.backend)
 
         fab_update_env()
 
@@ -82,3 +82,5 @@ class PersonaProduction(Deployment):
 instance = PersonaProduction()
 
 ```
+
+3. run ```fub node4 create``` TODO
