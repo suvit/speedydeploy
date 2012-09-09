@@ -17,6 +17,9 @@ from cron import CronTab
 
 
 class RabbitMQ(Daemon):
+
+    namespace = 'rabbitmq'
+
     def __init__(self, daemon_name=None):
         if daemon_name is None:
             daemon_name = 'rabbitmq-server'
@@ -27,14 +30,16 @@ class RabbitMQ(Daemon):
         os = fab.env.os
         os.install_package('rabbitmq-server')
 
+    @command
+    @run_as('root')
+    def configure(self):
         self.setup_user()
 
     def setup_user(self):
-
-        fab.run(_('rabbitmqctl add_user %(user)s %(mq_pass)s'))
-        fab.run(_('rabbitmqctl add_vhost %(domain)s'))
+        fab.run(_('rabbitmqctl add_user %(mq_user)s %(mq_pass)s'))
+        fab.run(_('rabbitmqctl add_vhost %(mq_domain)s'))
         fab.run(_('rabbitmqctl set_permissions'
-                  ' -p %(domain)s %(user)s'
+                  ' -p %(mq_domain)s %(mq_user)s'
                   ' ".*" ".*" ".*"'))
 
 
