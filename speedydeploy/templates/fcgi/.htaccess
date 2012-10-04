@@ -7,7 +7,7 @@ AddHandler fcgid-script .fcgi
 RewriteEngine On
 
 # Exclude /assets and /media directories and images from rewrite rules
-RewriteRule ^(assets|media)/* - [L]
+RewriteRule ^(assets|media|static)/* - [L]
 RewriteRule \.(jpg|jpeg|png|gif|ico)$ - [L]
 
 # Rewrite domain.com -> www.domain.com -- used with SEO Strict URLs plugin
