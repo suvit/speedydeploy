@@ -94,6 +94,10 @@ class Debian(Linux):
         self.install_package('sudo')
 
 
+class Gentoo(Linux):
+    pass
+
+
 class FreeBSD(OS):
 
     def rm(self, command):
@@ -168,6 +172,11 @@ class WindowsXP(Windows):
 class Windows7(Windows):
     name = '7'
     version = '7.0'
+
+
+class Windows8(Windows):
+    name = '8'
+    version = '8.0'
 
 
 class Daemon(object):
