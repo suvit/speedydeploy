@@ -3,11 +3,11 @@
 import os, sys
 from os.path import expanduser
 
-os.environ['DJANGO_SETTINGS_MODULE'] = '{{django_project_name}}.settings'
+os.environ['DJANGO_SETTINGS_MODULE'] = '{{django_settings}}'
 
 os.chdir(expanduser('{{ remote_dir }}'))
-sys.path.insert(0, expanduser('{{django_python_path}}'))
 sys.path.insert(0, expanduser('{{remote_dir}}/{{project_name}}'))
+sys.path.insert(0, expanduser('{{django_python_path}}'))
 
 from django.core.servers.fastcgi import runfastcgi
 runfastcgi(['method=prefork',

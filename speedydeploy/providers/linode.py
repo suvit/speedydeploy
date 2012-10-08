@@ -4,6 +4,7 @@ from ..base import Ubuntu
 
 from .base import Provider
 
+
 class Linode(Provider):
     def __init__(self):
         super(Linode, self).__init__()

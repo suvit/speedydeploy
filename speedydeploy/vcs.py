@@ -73,6 +73,8 @@ class SVNServer(object):
 
 
 class GIT(VCS):
+    use_submodules = False
+
     def install_development_libraries(self):
         fab.env.os.install_package('git-core')
 
@@ -82,9 +84,15 @@ class GIT(VCS):
 
     def update(self):
         fab.run('git pull')
+        if self.use_submodules:
+            fab.run('git submodule update')
 
     def clone(self):
         fab.run(_('git clone %(git_path)s'))
+        if self.use_submodules:
+            with fab.cd(_('%(remote_dir)s/%(project_name)s/')):
+                fab.run('git submodule init')
+                fab.run('git submodule update')
 
 
 class HG(VCS):
@@ -115,10 +123,10 @@ class NoneVCSWithExport(NoneVCS):
     def prepare(self):
         fab.local(_("cd tmp/ && tar -czf %(project_name)s.tgz %(project_name)s"))
         fab.put(_('tmp/%(project_name)s.tgz'), _('%(remote_dir)s/tmp/'))
-        
+
         with fab.cd(_('%(remote_dir)s/tmp')):
             fab.run(_("tar -xzf %(remote_dir)s/tmp/%(project_name)s.tgz"))
-        
+
         with fab.cd(_('%(remote_dir)s')):
             fab.env.os.mkdir("build")
             fab.run(_("mv %(remote_dir)s/tmp/%(project_name)s build"))

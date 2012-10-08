@@ -104,6 +104,10 @@ class Deployment(object):
     def os_add_user(self):
         fab.env.os.add_user(fab.env.user)
 
+    def add_deploy_key(self):
+        fab.run('ssh-keygen')
+        fab.run('cat ~/.ssh/id_rsa.pub')
+
     @run_as('root')
     def add_user(self):
         self.os_add_user()

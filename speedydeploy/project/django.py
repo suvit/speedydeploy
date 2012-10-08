@@ -46,6 +46,7 @@ class DjangoProject(object):
         path = fab.env['os'].path
         fab.env['django_project_name'] = path.basename(self.project_path.rstrip('/'))
         fab.env['django_python_path'] = project_path
+        fab.env['django_settings'] = 'settings'
 
 
     def get_version(self):
@@ -142,3 +143,4 @@ class Django14(DjangoProject):
         path = fab.env['os'].path
         python_path = path.split(self.project_path.rstrip('/'))[0]
         fab.env['django_python_path'] = python_path
+        fab.env['django_settings'] = '%s.settings' % fab.env['django_project_name']

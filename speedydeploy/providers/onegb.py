@@ -7,6 +7,7 @@ from ..project import CronTab
 
 from .base import Provider
 
+
 class OnegbShared(Provider):
 
     shared = True
