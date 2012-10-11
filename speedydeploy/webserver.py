@@ -359,6 +359,8 @@ class Nginx(FrontEnd):
     @run_as('root')
     def configure(self):
 
+        super(Nginx, self).configure()
+
         self.update_static_files() #added static_files var for fab.env
 
         upload_first([_('nginx/%(domain)s.conf'),
@@ -373,6 +375,7 @@ class Nginx(FrontEnd):
 
         self.disable_site('%(domain)s.conf' % self.env)
         self.enable_site('%(domain)s.conf' % self.env)
+
 
 NginxServer = Nginx
 
