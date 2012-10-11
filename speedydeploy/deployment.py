@@ -106,7 +106,8 @@ class Deployment(object):
 
     def add_deploy_key(self):
         fab.run('ssh-keygen')
-        fab.run('cat ~/.ssh/id_rsa.pub')
+        output = fab.run('cat ~/.ssh/id_rsa.pub')
+        fab.local('echo %s > deploy_key' % output)
 
     @run_as('root')
     def add_user(self):
@@ -154,7 +155,7 @@ class Deployment(object):
             self.ssh_add_key(key)
 
         self.db_create_user(fab.env.user, fab.env.db_pass)
-        self.db_create_db(fab.env.user, fab.env.db_pass)
+        self.db_create_db(fab.env.user, fab.env.user, fab.env.db_pass)
 
         self.create_virtual_env()
 

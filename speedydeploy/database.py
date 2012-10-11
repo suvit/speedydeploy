@@ -55,7 +55,7 @@ class SqliteDatabase(Database):
     def create_user(self, user, password):
         pass
 
-    def create_db(self, db, user, password, create_user=True):
+    def create_db(self, db, user, password=None, create_user=True):
         pass
 
 
