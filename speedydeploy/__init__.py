@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-VERSION = __version__ = (0, 1, 0, 'beta', 2)
+VERSION = __version__ = (0, 1, 0, 'beta', 3)
 
 def get_version(version=None):
     """Derives a PEP386-compliant version number from VERSION."""
