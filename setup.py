@@ -46,6 +46,6 @@ setup(
             'speedydeploy',
             'requirements.txt'
         )
-    ).read().split(),
+    ).read(),
     include_package_data=True,
 )
