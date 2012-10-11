@@ -74,22 +74,19 @@ class FrontEnd(Daemon):
 
     @command
     def start(self, pty=True):
-        # TODO inherit daemon start
-        pass
+        super(FrontEnd, self).start(pty=pty)
 
     @command
     def stop(self, pty=True):
-        # TODO inherit daemon stop
-        pass
+        super(FrontEnd, self).stop(pty=pty)
 
     @command
     def restart(self):
-        # TODO inherit daemon restart
-        pass
+        super(FrontEnd, self).restart(pty=pty)
 
     @command
     def reload(self):
-        pass
+        super(FrontEnd, self).reload(pty=pty)
 
     @command
     def configure(self):
@@ -102,6 +99,8 @@ Server = WebServer # TODO remove this
 
 class Backend(object): #TODO inherit Server
     name = NotImplemented
+
+    namespace = 'backend'
 
     def __init__(self, domain=None):
         if domain is not None:
