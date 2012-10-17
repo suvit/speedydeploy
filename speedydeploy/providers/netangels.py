@@ -34,7 +34,7 @@ class NetangelsVDS(Provider):
 
         fab.env.remote_dir = _("/home/%(user)s")
 
-        fab.env.bd = Maria52Database()
+        fab.env.db = Maria52Database()
 
 
 class VDS512(NetangelsVDS):
