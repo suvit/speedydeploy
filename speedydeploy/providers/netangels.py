@@ -3,6 +3,7 @@ from fabric import api as fab
 from ..base import Debian
 from ..deployment import _
 from ..project import CronTab
+from ..database import Maria52Database
 
 from .base import Provider
 
@@ -32,6 +33,8 @@ class NetangelsVDS(Provider):
         fab.env.os = Debian()
 
         fab.env.remote_dir = _("/home/%(user)s")
+
+        fab.env.bd = Maria52Database()
 
 
 class VDS512(NetangelsVDS):

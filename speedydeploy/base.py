@@ -91,6 +91,7 @@ class Debian(Linux):
 
     @run_as('root')
     def install_development_libraries(self):
+        super(Debian, self).install_development_libraries()
         self.install_package('sudo')
 
 
