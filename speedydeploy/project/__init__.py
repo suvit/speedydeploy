@@ -178,7 +178,7 @@ class Project(object):
             dirs.extend(fab.env.supervisor.dirs())
 
         if self.use_scrapy:
-            dirs.extend(self.scrapy.dirs())
+            dirs.extend(fab.env.scrapy.dirs())
 
         os = fab.env.os
         for directory in dirs:
