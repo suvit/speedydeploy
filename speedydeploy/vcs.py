@@ -73,7 +73,10 @@ class SVNServer(object):
 
 
 class GIT(VCS):
-    use_submodules = False
+
+    @property
+    def use_submodules(self):
+        return exists(_('%(remote_dir)s/%(project_name)s/.gitmodules'))
 
     def install_development_libraries(self):
         fab.env.os.install_package('git-core')

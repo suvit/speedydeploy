@@ -115,8 +115,7 @@ class Deployment(object):
         self.update_rsa_key()
 
     def exists(self, path):
-        with fab.settings(warn_only=True):
-            return fab.run('test -e %s' % path)
+        return fab_files.exists(path)
 
     def backup(self):
         fab.env.db.backup()

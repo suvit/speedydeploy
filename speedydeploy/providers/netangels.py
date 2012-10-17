@@ -26,8 +26,14 @@ class Lite(NetangelsShared):
 
 
 class NetangelsVDS(Provider):
-    pass
+    def __init__(self):
+        super(NetangelsVDS, self).__init__()
+
+        fab.env.os = Debian()
+
+        fab.env.remote_dir = _("/home/%(user)s")
 
 
 class VDS512(NetangelsVDS):
     pass
+VDS2 = VDS512
