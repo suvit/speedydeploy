@@ -98,7 +98,13 @@ class Deployment(object):
 
     @run_as('root')
     def update_rsa_key(self, pub_key_file):
-        self.ssh_add_key(pub_key_file)
+        old_user = fab.env.user
+
+        fab.env.user = 'root'
+        try:
+            self.ssh_add_key(pub_key_file)
+        finally:
+            fab.env.user = old_user
 
     @run_as('root')
     def os_add_user(self):
