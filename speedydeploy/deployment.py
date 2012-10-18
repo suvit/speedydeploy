@@ -141,9 +141,10 @@ class Deployment(object):
 
     def update_env(self):
         fab.env.project.install()
-        fab.env.project.install_development_libraries()
-        fab.env.project.install_setuptools()
-        fab.env.project.install_virtualenv()
+        if 'provider' in fab.env and fab.env.provider.can_addpackages:
+            fab.env.project.install_development_libraries()
+            fab.env.project.install_setuptools()
+            fab.env.project.install_virtualenv()
 
     def create_virtual_env(self):
         self.update_env()
@@ -152,12 +153,15 @@ class Deployment(object):
         self.update_virtual_env()
 
     def create(self, key=None):
-        if key:
-            self.update_rsa_key(key) # for root
 
-        self.os_add_user()
-        if key:
-            self.ssh_add_key(key)
+        if 'provider' in fab.env and fab.env.provider.can_adduser:
+            if key:
+                self.update_rsa_key(key) # for root
+
+            self.os_add_user()
+
+            if key:
+                self.ssh_add_key(key)
 
         self.db_create_user(fab.env.user, fab.env.db_pass)
         self.db_create_db(fab.env.user, fab.env.user, fab.env.db_pass)

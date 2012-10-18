@@ -13,3 +13,12 @@ class Linode(Provider):
         fab.env.os = Ubuntu()
 
         fab.env.remote_dir = _("/home/%(user)s")
+
+class Linode512(Linode):
+    pass
+
+class Linode768(Linode):
+    pass
+
+class Linode1024(Linode):
+    pass

@@ -19,6 +19,7 @@ class NetangelsShared(Provider):
 
         fab.env.remote_dir = _("/home/%(user)s/%(instance_name)s/")
 
+        # TODO netangels have bcrontab which not worked with fab-deploy<0.8
         fab.env.cron = CronTab()
 
 
