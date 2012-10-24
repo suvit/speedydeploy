@@ -37,6 +37,8 @@ class NetangelsVDS(Provider):
 
         fab.env.db = Maria52Database()
 
+        fab.env.cron = CronTab()
+
 
 class VDS512(NetangelsVDS):
     pass

@@ -84,7 +84,8 @@ class DjangoProject(object):
 
     @command(same_name=True)
     def update_settings_local(self):
-        settings_local_path = self.project_path + 'settings_local.py'
+        settings_local_path = fab.env.os.path.join(self.project_path,
+                                                   'settings_local.py')
 
         context = fab.env
 
