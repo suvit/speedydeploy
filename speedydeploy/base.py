@@ -153,7 +153,7 @@ class Ubuntu1110(Ubuntu):
     version = '11.10'
 
 
-class Ubuntu1214(Ubuntu):
+class Ubuntu124(Ubuntu):
     name = 'precise'
     version = '12.4'
 

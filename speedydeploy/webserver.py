@@ -7,7 +7,7 @@ from fabric import api as fab
 
 from fab_deploy.utils import run_as
 
-from base import _, Daemon
+from base import _, Daemon, Ubuntu
 from deployment import command
 from utils import upload_template, upload_first
 
@@ -81,11 +81,11 @@ class FrontEnd(Daemon):
         super(FrontEnd, self).stop(pty=pty)
 
     @command
-    def restart(self):
+    def restart(self, pty=True):
         super(FrontEnd, self).restart(pty=pty)
 
     @command
-    def reload(self):
+    def reload(self, pty=True):
         super(FrontEnd, self).reload(pty=pty)
 
     @command
@@ -321,10 +321,12 @@ class Nginx(FrontEnd):
         self.start_backend()
 
     def stop_backend(self):
-        self.backend.stop()
+        if self.backend:
+            self.backend.stop()
 
     def start_backend(self):
-        self.backend.start()
+        if self.backend:
+            self.backend.start()
 
     def reload(self):
         self.stop_backend()
@@ -333,6 +335,10 @@ class Nginx(FrontEnd):
 
     def install_development_libraries(self):
         os = fab.env.os
+        if isinstance(os, Ubuntu):
+            os.install_package('python-software-properties')
+            fab.run('add-apt-repository ppa:nginx/stable')
+            fab.run('apt-get update')
         os.install_package('nginx')
 
     def update_static_files(self):
