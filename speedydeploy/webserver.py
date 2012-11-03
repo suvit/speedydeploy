@@ -209,8 +209,11 @@ class Gunicorn(Backend):
                       ' -c %(remote_dir)s/etc/gunicorn/conf.py'))
 
     def reload(self):
-        self.stop()
-        self.start()
+        with fab.settings(warn_only=True):
+            fab.run(_("kill -HUP `cat %(remote_dir)s/run/gunicorn.pid`"))
+
+        #self.stop()
+        #self.start()
 
     @command
     def configure(self):
@@ -314,24 +317,26 @@ class Nginx(FrontEnd):
 
     def stop(self, pty=True):
         super(NginxServer, self).stop(pty=pty)
-        self.stop_backend()
+        self.backend_stop()
 
     def start(self, pty=True):
         super(NginxServer, self).start(pty=pty)
-        self.start_backend()
+        self.backend_start()
 
-    def stop_backend(self):
+    def backend_stop(self):
         if self.backend:
             self.backend.stop()
 
-    def start_backend(self):
+    def backend_start(self):
         if self.backend:
             self.backend.start()
 
+    def backend_reload(self):
+        if self.backend:
+            self.backend.reload()
+
     def reload(self):
-        self.stop_backend()
-        time.sleep(2)
-        self.start_backend()
+        self.backend_reload()
 
     def install_development_libraries(self):
         os = fab.env.os
@@ -447,12 +452,6 @@ class NginxFcgi(NginxServer):
 
     def __init__(self, **kwargs):
         super(NginxServerWithFcgi, self).__init__(**kwargs)
-
-    def stop_backend(self):
-        self.backend.stop()
-
-    def start_backend(self):
-        self.backend.start()
 
 
 NginxWithFcgi = NginxFcgi
