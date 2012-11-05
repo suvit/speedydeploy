@@ -17,5 +17,4 @@ runfastcgi(['method=threaded',
             "maxchildren=1",
             "maxrequests={{fcgi_maxrequests|default('1000')}}",
             "outlog={{remote_dir}}/log/fcgi.log",
-            "errlog={{remote_dir}}/log/fcgi.log",
-            "pidfile={{remote_dir}}/run/fcgi.pid"])
+            "errlog={{remote_dir}}/log/fcgi.log"])

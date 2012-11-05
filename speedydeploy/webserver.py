@@ -144,16 +144,26 @@ class FcgiBackend(Backend):
 
 class FcgiWrapper(FcgiBackend):
 
+    fcgi_path = '%(remote_dir)s/http'
+
     def dirs(self):
         return ['http']
 
     def configure(self):
-        upload_first([_('nginx/%(domain)s.fcgi.py'),
+        upload_first([_('nginx/%(domain)s-sh.fcgi'),
+                      'fcgi/wrapper-sh.fcgi'],
+                      _(self.fcgi_path) + 'wrapper.fcgi',
+                     fab.env,
+                     mode=0755,
+                     use_jinja=True)
+
+        upload_first([_('nginx/%(domain)s.fcgi'),
                       'fcgi/wrapper.fcgi'],
                      _('%(remote_dir)s/http/wrapper.fcgi'),
                      fab.env,
                      mode=0755,
                      use_jinja=True)
+
         upload_first([_('nginx/%(domain)s.htaccess'),
                       'fcgi/.htaccess'],
                      _('%(remote_dir)s/http/.htaccess'),
@@ -165,6 +175,10 @@ class FcgiWrapper(FcgiBackend):
             with fab.settings(warn_only=True):
                 fab.run('ln -s ../media/static')
                 fab.run('ln -s ../media/media')
+
+    def stop(self):
+        with fab.settings(warn_only=True):
+            fab.run(_("killall wrapper.fcgi"))
 
 
 class Gunicorn(Backend):
