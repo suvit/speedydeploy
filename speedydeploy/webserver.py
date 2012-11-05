@@ -118,7 +118,7 @@ class FcgiBackend(Backend):
 
     def install_requirements(self):
         with fab.cd(_('%(remote_dir)s/')):
-            fab.run('env/bin/pip install -U flup')
+            fab.run('env/bin/pip install "flup==1.0.2"')
 
     def stop(self):
         with fab.settings(warn_only=True):
@@ -126,14 +126,17 @@ class FcgiBackend(Backend):
 
     def start(self):
         with fab.cd(_('%(remote_dir)s/%(project_name)s')):
+            # TODO use' socket=%(remote_dir)s/run/fcgi.sock'
             fab.run(_('../env/bin/python manage.py runfcgi'
-                    ' host=127.0.0.1 port=8080'
-                    ' daemonize=True'
-                    ' minspare=1'
-                    ' maxspare=%(worker_count)s'
-                    ' maxchildren=1'
-                    ' method=prefork'
-                    ' pidfile=%(remote_dir)s/run/fcgi.pid'))
+                      ' host=127.0.0.1 port=8080',
+                      ' daemonize=true'
+                      ' minspare=1'
+                      ' maxspare=%(worker_count)s'
+                      ' maxchildren=%(worker_count)s'
+                      ' maxrequests=1000'
+                      ' method=prefork'
+                      ' pidfile=%(remote_dir)s/run/fcgi.pid'
+                      ' logfile=%(remote_dir)s/log/fcgi.log'))
 
     def reload(self):
         fab.run(_('touch %(remote_dir)s/http/wrapper.fcgi'))
