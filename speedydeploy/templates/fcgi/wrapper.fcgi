@@ -13,7 +13,9 @@ from django.core.servers.fastcgi import runfastcgi
 runfastcgi(['method=prefork',
             'daemonize=false',
             "minspare=1",
-            "maxspare={{worker_count|default('2')}}",
-            "maxchildren=0",
+            "maxspare=1",
+            "maxchildren={{worker_count|default('2')}}",
+            "maxrequests={{fcgi_maxrequest|default('1000')}}",
+            "outlog={{remote_dir}}/log/fcgi.log",
             "errlog={{remote_dir}}/log/fcgi.log",
             "pidfile={{remote_dir}}/run/fcgi.pid"])

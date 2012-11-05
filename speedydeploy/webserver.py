@@ -146,7 +146,7 @@ class FcgiWrapper(FcgiBackend):
 
     def configure(self):
         upload_first([_('nginx/%(domain)s.fcgi.py'),
-                      'fcgi/wrapper.py'],
+                      'fcgi/wrapper.fcgi'],
                      _('%(remote_dir)s/http/wrapper.fcgi'),
                      fab.env,
                      mode=0755,
