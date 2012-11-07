@@ -7,8 +7,6 @@ from fabric import api as fab
 from fabric.contrib import files as fab_files
 from fabric.contrib.files import exists
 
-from fab_deploy.crontab import crontab_set, crontab_add, crontab_show,\
-    crontab_remove, crontab_update
 from fab_deploy.system import ssh_add_key
 from fab_deploy.utils import run_as
 
@@ -20,6 +18,7 @@ from celery import RabbitMQ, Celery
 from sphinxsearch import *
 from supervisor import SuperVisorD, SuperVisor
 from cron import CronTab
+from memcache import Memcache, PyLibMC
 
 
 class DNSManager(object):
@@ -32,84 +31,6 @@ class DNSManager(object):
 
     def add_cname_record(self, name):
         raise NotImplementedError
-
-
-class Memcache(Daemon):
-
-    pid_file = '/var/run/memcached.pid'
-
-    namespace = 'memcache'
-
-    def __init__(self, daemon_name=None):
-        if daemon_name is None:
-            daemon_name = 'memcached'
-        super(Memcache, self).__init__(daemon_name)
-
-    @run_as('root')
-    def put_config(self):
-
-        upload_template('memcached/memcached.conf',
-                        "/etc/memcached.conf",
-                        use_jinja=True)
-
-        upload_template('memcached/memcached',
-                        "/etc/init.d/memcached",
-                        mode=0755,
-                        use_jinja=True)
-
-        fab.run('touch %s' % self.pid_file)
-        fab.run('chown nobody %s' % self.pid_file)
-
-    @run_as('root')
-    def install(self):
-
-        with fab.settings(warn_only=True):
-            self.stop()
-
-        self.put_config()
-
-        self.restart()
-
-    def update(self):
-        self.put_config()
-        self.restart()
-
-    @run_as('root')
-    def install_development_libraries(self):
-        fab.env.os.install_package('memcached')
-
-    def install_requirements(self):
-        with fab.cd(_('%(remote_dir)s/')):
-            fab.run('env/bin/pip install -U python-memcached')
-
-    @command
-    def configure(self, install=True):
-        memcache = fab.env.memcache
-        if install:
-            memcache.install()
-        else:
-            memcache.update()
-
-
-class PyLibMC(Memcache):
-    @run_as('root')
-    def install_development_libraries(self):
-        super(PyLibMC, self).install_development_libraries()
-        os = fab.env.os
-        if isinstance(os, Ubuntu) and os.version.split('.') == ['10','4']:
-            # XXX default libmemcached-dev in Ubuntu lucid
-            # is version 0.31. its too small for pylibmc
-            # TODO do not use add-apt-repository, use deb src file
-            # https://launchpad.net/~muffinresearch/+archive/pylibmc-build-deps
-            os.install_package('python-software-properties')
-            fab.run('add-apt-repository ppa:muffinresearch/pylibmc-build-deps')
-            fab.run('apt-get update')
-        os.install_package('libmemcached-dev')
-
-    def install_requirements(self):
-        with fab.cd(_('%(remote_dir)s/')):
-            fab.run('env/bin/pip install -U pylibmc')
-            fab.run('env/bin/pip install -e git://github.com/jbalogh/django-pylibmc.git#egg=django-pylibmc')
 
 
 class LogRotate(object):
