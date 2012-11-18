@@ -133,7 +133,7 @@ class FcgiBackend(Backend):
                       ' minspare=1'
                       ' maxspare=%(worker_count)s'
                       ' maxchildren=%(worker_count)s'
-                      ' maxrequests=1000'
+                      ' maxrequests=10000'
                       ' method=prefork'
                       ' pidfile=%(remote_dir)s/run/fcgi.pid'
                       ' logfile=%(remote_dir)s/log/fcgi.log'))
