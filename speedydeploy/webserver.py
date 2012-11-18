@@ -285,9 +285,11 @@ class UwsgiBackend(Backend):
             fab.run('env/bin/pip install -U uwsgi')
             fab.run('env/bin/pip install -U uwsgitop')
 
+    @command
     def stop(self):
-            fab.run(_("kill -TERM `cat %(remote_dir)s/run/uwsgi.pid`"))
+            fab.run(_("kill -INT `cat %(remote_dir)s/run/uwsgi.pid`"))
 
+    @command
     def start(self):
         if self.supervisor:
             return
@@ -298,9 +300,6 @@ class UwsgiBackend(Backend):
     def reload(self):
         with fab.settings(warn_only=True):
             fab.run(_("kill -HUP `cat %(remote_dir)s/run/uwsgi.pid`"))
-
-        #self.stop()
-        #self.start()
 
     @command
     def configure(self):
