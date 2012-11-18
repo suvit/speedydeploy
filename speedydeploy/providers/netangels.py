@@ -27,6 +27,14 @@ class Lite(NetangelsShared):
     pass
 
 
+class Standard(NetangelsShared):
+    pass
+
+
+class Professional(NetangelsShared):
+    pass
+
+
 class NetangelsVDS(Provider):
     def __init__(self):
         super(NetangelsVDS, self).__init__()

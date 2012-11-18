@@ -6,6 +6,7 @@ import ntpath as nt_path
 from functools import wraps
 
 from fabric import api as fab
+from fabric.context_managers import hide
 from fabric.contrib import files as fab_files
 
 from fab_deploy import detect_os
@@ -46,7 +47,13 @@ class OS(object):
         self.install_package('python-dev')
 
 
-class Linux(OS):
+class Unix(OS):
+
+    def rm(self, command):
+        return fab.run('rm -rf %s' % command)
+
+    def mkdir(self, command):
+        return fab.run('mkdir -p %s' % command)
 
     @run_as('root')
     def set_permission(self, target, pattern):
@@ -54,8 +61,8 @@ class Linux(OS):
         fab.env['target'] = target
         fab.env['pattern'] = pattern
 
-        fab.run(_('chown %(user)s:%(user)s %(target)s -R'))
-        fab.run(_('chmod %(pattern)s %(target)s -R'))
+        fab.run(_('chown -R %(user)s:%(user)s %(target)s'))
+        fab.run(_('chmod -R %(pattern)s %(target)s'))
 
     def set_permissions(self, target=None, pattern=None):
         context = fab.env
@@ -68,17 +75,15 @@ class Linux(OS):
             pattern = 'u+rwX,go+rX,go-w'
         context['pattern'] = pattern
 
-        fab.run('chown %(user)s:%(user)s %(target)s -R' % context)
-        fab.run('chmod %(pattern)s %(target)s -R' % context )
+        fab.run('chown -R %(user)s:%(user)s %(target)s' % context)
+        fab.run('chmod -R %(pattern)s %(target)s' % context )
+
+
+class Linux(Unix):
+    pass
 
 
 class Debian(Linux):
-
-    def rm(self, command):
-        return fab.run('rm -rf %s' % command)
-
-    def mkdir(self, command):
-        return fab.run('mkdir -p %s' % command)
 
     def install_package(self, package):
         return fab.sudo('apt-get install -q -y %s' % package)
@@ -99,19 +104,8 @@ class Gentoo(Linux):
     pass
 
 
-class FreeBSD(OS):
-
-    def rm(self, command):
-        with fab.settings(
-            fab.context_managers.hide('warnings'),
-            warn_only=True):
-            fab.run('rm -rf %s' % command)
-
-    def mkdir(self, command):
-        with fab.settings(
-            fab.context_managers.hide('warnings'),
-            warn_only=True):
-            fab.run('mkdir -p %s' % command)
+class FreeBSD(Unix):
+    pass
 
 
 class EtchDebian(Debian):
