@@ -144,7 +144,7 @@ class FcgiBackend(Backend):
 
 class FcgiWrapper(FcgiBackend):
 
-    fcgi_path = '%(remote_dir)s/http'
+    fcgi_path = '%(remote_dir)s/http/'
 
     def dirs(self):
         return ['http']
@@ -152,7 +152,7 @@ class FcgiWrapper(FcgiBackend):
     def configure(self):
         upload_first([_('nginx/%(domain)s-sh.fcgi'),
                       'fcgi/wrapper-sh.fcgi'],
-                      _(self.fcgi_path) + 'wrapper.fcgi',
+                     _(self.fcgi_path) + 'wrapper.fcgi',
                      fab.env,
                      mode=0755,
                      use_jinja=True)
