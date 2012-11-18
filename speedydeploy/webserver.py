@@ -272,7 +272,63 @@ class WsgiBackend(Backend):
 
 class UwsgiBackend(Backend):
     name = 'uwsgi'
-    # TODO
+
+    namespace = 'backend'
+
+    supervisor = False
+
+    def dirs(self):
+        return ['etc/uwsgi']
+
+    def install_requirements(self):
+        with fab.cd(_('%(remote_dir)s/')):
+            fab.run('env/bin/pip install -U uwsgi')
+            fab.run('env/bin/pip install -U uwsgitop')
+
+    def stop(self):
+            fab.run(_("kill -TERM `cat %(remote_dir)s/run/uwsgi.pid`"))
+
+    def start(self):
+        if self.supervisor:
+            return
+
+        fab.run(_('%(remote_dir)s/env/bin/uwsgi'
+                  ' --ini %(remote_dir)s/etc/uwsgi/conf.ini'))
+
+    def reload(self):
+        with fab.settings(warn_only=True):
+            fab.run(_("kill -HUP `cat %(remote_dir)s/run/uwsgi.pid`"))
+
+        #self.stop()
+        #self.start()
+
+    @command
+    def configure(self):
+        if fab.env.project.use_django:
+            if fab.env.project.django.HAS_WSGI:
+                default_template = 'uwsgi/django.ini'
+            else:
+                default_template = 'uwsgi/django_old.ini'
+        else:
+            default_template = 'uwsgi/default.ini'
+
+        upload_first([_('uwsgi/%(domain)s.conf'),
+                      _('nginx/%(domain)s.uwsgi.conf'),
+                      default_template],
+                     _('%(remote_dir)s/etc/uwsgi/conf.ini'),
+                     fab.env,
+                     use_jinja=True)
+
+    def supervisor_configure(self):
+        upload_first([_('uwsgi/%(domain)s.supervisor.conf'),
+                      'uwsgi/supervisor.conf',
+                     ],
+                     _('%(remote_dir)s/etc/supervisor/uwsgi.conf'),
+                     fab.env,
+                     use_jinja=True)
+
+    def supervisor_start(self):
+        pass
 
 
 class ServerWithBackend(Server):
