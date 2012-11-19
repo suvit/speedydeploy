@@ -330,10 +330,6 @@ class UwsgiBackend(Backend):
         pass
 
 
-class ServerWithBackend(Server):
-    backend = NotImplemented
-
-
 class ApacheServer(FrontEnd):
     local_dir = 'apache'
 
@@ -460,81 +456,3 @@ class Nginx(FrontEnd):
 
 
 NginxServer = Nginx
-
-
-class Apache2ServerWithFcgi(Apache2Server):
-
-    backend = FcgiBackend
-
-    def local_path(self, path=''):
-        return os.path.abspath(os.path.join(os.path.dirname(__file__),
-                                            self.local_dir,
-                                            path)
-                              )
-
-    def configure(self):
-        self.put_site_config(self.domain)
-        self.put_fcgi_scripts()
-
-    def put_site_config(self, site=None):
-        if site is None:
-            site = fab.env.domain
-
-        context = dict(project=fab.env.user,
-                       project_name=fab.env.project_name,
-                       domain=site,
-                       domain_escaped=site.replace('.','\.'))
-
-        upload_template('apache/.htaccess',
-                        '/home/%s/%s/www/.htaccess' % (fab.env.user, site),
-                        context,
-                        use_jinja=True)
-
-    def put_fcgi_scripts(self):
-        context = dict(project=fab.env.user,
-                       project_name=fab.env.project_name,
-                       domain='%s.ru' % fab.env.user,
-                       domain_escaped='%s\\.ru' % fab.env.user)
-
-        upload_template("apache/project-sh.fcgi",
-                        '/var/www/%(project)s/%(project)s-sh.fcgi' % context,
-                        context=context,
-                        mode=0755,
-                        use_jinja=True)
-
-        upload_template("apache/project.fcgi",
-                        '/var/www/%(project)s/%(project)s.fcgi' % context,
-                        context=context,
-                        mode=0755,
-                        use_jinja=True)
-
-
-class Apache2ServerWithWsgi(Apache2Server):
-
-    backend = WsgiBackend
-
-    def configure(self):
-        self.backend.configure()
-        self.restart()
-
-
-class NginxFcgi(NginxServer):
-
-    backend = FcgiBackend
-
-    def __init__(self, **kwargs):
-        super(NginxServerWithFcgi, self).__init__(**kwargs)
-
-
-NginxWithFcgi = NginxFcgi
-NginxServerWithFcgi = NginxFcgi
-
-
-class NginxWithGunicorn(NginxServer):
-
-    backend = Gunicorn
-
-
-class NginxWithUwsgi(NginxServer):
-
-    backend = UwsgiBackend
