@@ -7,14 +7,14 @@ LOGGING = {
     'version': 1,
     'disable_existing_loggers': True,
     'formatters': {
-        'verbose': {
-            'format': '%(asctime)s - %(name)s - %(levelname)s - %(module)s - %(process)d - %(thread)d - %(message)s'
-        },
         'simple': {
             'format': '%(levelname)s - %(message)s'
         },
         'advanced':{
-            'format': '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+            'format': '%(asctime)s - %(levelname)s - %(name)s - %(message)s'
+        },
+        'verbose': {
+            'format': '%(asctime)s - %(levelname)s - %(name)s - %(module)s - %(process)d - %(thread)d - %(message)s'
         },
     },
     'handlers': {
