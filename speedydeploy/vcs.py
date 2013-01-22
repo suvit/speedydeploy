@@ -91,10 +91,11 @@ class GIT(VCS):
             fab.run('git submodule update --init')
 
     def clone(self):
-        fab.run(_('git clone %(git_path)s'))
-        if self.use_submodules:
-            with fab.cd(_('%(remote_dir)s/%(project_name)s/')):
-                fab.run('git submodule update --init')
+        fab.run(_('git clone --recursive %(git_path)s'))
+        #if self.use_submodules:
+        #    with fab.cd(_('%(remote_dir)s/%(project_name)s/')):
+        #        fab.run('git submodule init')
+        #        fab.run('git submodule update')
 
 
 class HG(VCS):
