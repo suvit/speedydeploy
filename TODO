@@ -1,3 +1,6 @@
 write README and other docs
 write some tests
 write examples
+
+use logging to show fabric output
+add logging handlers that saves output

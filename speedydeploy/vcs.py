@@ -88,14 +88,13 @@ class GIT(VCS):
     def update(self):
         fab.run('git pull')
         if self.use_submodules:
-            fab.run('git submodule update')
+            fab.run('git submodule update --init')
 
     def clone(self):
         fab.run(_('git clone %(git_path)s'))
         if self.use_submodules:
             with fab.cd(_('%(remote_dir)s/%(project_name)s/')):
-                fab.run('git submodule init')
-                fab.run('git submodule update')
+                fab.run('git submodule update --init')
 
 
 class HG(VCS):
