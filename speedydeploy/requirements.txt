@@ -1,4 +1,5 @@
 django-fab-deploy>=0.7.4
-fabric
+fabric-taskset
+fabric>1.4
 
 jinja2

@@ -9,8 +9,7 @@ from fabric import api as fab
 from fabric.context_managers import hide
 from fabric.contrib import files as fab_files
 
-from fab_deploy import detect_os
-from fab_deploy.utils import run_as
+from fab_deploy.utils import run_as, detect_os
 
 _ = lambda s: s % fab.env
 

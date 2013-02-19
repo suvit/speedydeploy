@@ -8,39 +8,13 @@ import time
 
 from fabric import api as fab
 from fabric.contrib import files as fab_files
-from fab_deploy.crontab import crontab_set, crontab_add, crontab_show,\
-    crontab_remove, crontab_update
 from fab_deploy.system import ssh_add_key
 from fab_deploy.utils import run_as
 
+from taskset import TaskSet, task
+
 from base import _, OS, Debian, Ubuntu, Ubuntu104, Daemon
 from utils import upload_template, upload_first
-
-
-def add_class_methods_as_module_level_functions_for_fabric(instance,
-                                                           module_name):
-    '''
-    Utility to take the methods of the instance of a class, instance,
-    and add them as functions to a module, module_name, so that Fabric
-    can find and call them. Call this at the bottom of a module after
-    the class definition.
-    '''
-    # get the module as an object
-    module_obj = sys.modules[module_name]
-
-    # Iterate over the methods of the class and dynamically create a function
-    # for each method that calls the method and add it to the current module
-    for method in inspect.getmembers(instance, predicate=inspect.ismethod):
-        method_name, method_obj = method
-
-        if not method_name.startswith('_'):
-            # get the bound method
-            func = getattr(instance, method_name)
-
-            # add the function to the current module
-            setattr(module_obj, method_name, func)
-
-add_fabric_methods = add_class_methods_as_module_level_functions_for_fabric
 
 
 def command(func=None, namespace=None, same_name=False, aliases=()):
@@ -71,10 +45,13 @@ def command(func=None, namespace=None, same_name=False, aliases=()):
     return decorator
 
 
-class Deployment(object):
+class Deployment(TaskSet):
 
-    def __init__(self):
-        add_fabric_methods(self, self.__class__.__module__)
+    def _is_task(self, func):
+        return inspect.ismethod(func) and not func.func_name.startswith('_')
+
+    def _task_for_method(self, method):
+        return method
 
     def ssh_add_key(self, pub_key_file):
         """ Adds a ssh key from passed file to user's
@@ -98,6 +75,9 @@ class Deployment(object):
 
     @run_as('root')
     def update_rsa_key(self, pub_key_file):
+        """ Root adds a ssh key from passed file to user's
+            authorized_keys on server."""
+
         old_user = fab.env.user
 
         fab.env.user = 'root'
