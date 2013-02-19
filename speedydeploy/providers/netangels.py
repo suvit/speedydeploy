@@ -2,7 +2,7 @@ from fabric import api as fab
 
 from ..base import Debian
 from ..deployment import _
-from ..project import CronTab
+from ..cron import BCronTab
 from ..database import Maria52Database
 
 from .base import Provider
@@ -20,7 +20,7 @@ class NetangelsShared(Provider):
         fab.env.remote_dir = _("/home/%(user)s/%(instance_name)s/")
 
         # TODO netangels have bcrontab which not worked with fab-deploy<0.8
-        fab.env.cron = CronTab()
+        fab.env.cron = BCronTab()
 
 
 class Lite(NetangelsShared):
