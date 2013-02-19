@@ -2,7 +2,7 @@ from fabric import api as fab
 
 from ..base import Ubuntu, Ubuntu104
 from ..deployment import _
-from ..project import CronTab
+from ..project.cron import CronTab
 
 from .base import Provider
 

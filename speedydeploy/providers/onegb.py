@@ -3,7 +3,7 @@ from fabric import api as fab
 from ..base import Gentoo
 from ..deployment import _
 from ..webserver import FcgiWrapper
-from ..project import CronTab
+from ..project.cron import CronTab
 
 from .base import Provider
 

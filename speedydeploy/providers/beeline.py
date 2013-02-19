@@ -2,7 +2,7 @@ from fabric import api as fab
 
 from ..base import FreeBSD
 from ..deployment import _
-from ..project import CronTab
+from ..project.cron import CronTab
 from ..database import Maria52Database
 
 from .base import Provider
