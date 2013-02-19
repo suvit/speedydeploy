@@ -45,9 +45,13 @@ class LogRotate(object):
 
 
 class Scrapy(object):
+
+    namespace = 'scrapy'
+
     def dirs(self):
         return ['data/scrapy']
 
+    @command
     def configure(self):
         upload_first(['scrapy/settings_local.py',
                       'scrapy/settings_default.py'],

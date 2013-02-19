@@ -94,7 +94,7 @@ class Deployment(TaskSet):
         fab.env.os.add_user(fab.env.user)
 
     def add_deploy_key(self):
-        fab.run('ssh-keygen')
+        fab.run('ssh-keygen -A')
         output = fab.run('cat ~/.ssh/id_rsa.pub')
         fab.local('echo %s > deploy_key' % output)
 
@@ -103,15 +103,9 @@ class Deployment(TaskSet):
         self.os_add_user()
         self.update_rsa_key()
 
-    def exists(self, path):
-        return fab_files.exists(path)
-
     def backup(self):
         fab.env.db.backup()
         fab.env.project.backup()
-
-    def scrapy_configure(self):
-        fab.env.project.scrapy.configure()
 
     def set_permissions(self, target=None, pattern=None):
         if target is None:
