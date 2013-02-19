@@ -47,6 +47,9 @@ def command(func=None, namespace=None, same_name=False, aliases=()):
 
 class Deployment(TaskSet):
 
+    def __init__(self):
+        self.expose_to(self.__module__)
+
     def _is_task(self, func):
         return inspect.ismethod(func) and not func.func_name.startswith('_')
 
