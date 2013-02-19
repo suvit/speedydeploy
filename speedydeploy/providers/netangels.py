@@ -2,7 +2,7 @@ from fabric import api as fab
 
 from ..base import Debian
 from ..deployment import _
-from ..cron import BCronTab
+from ..project.cron import BCronTab
 from ..database import Maria52Database
 
 from .base import Provider
