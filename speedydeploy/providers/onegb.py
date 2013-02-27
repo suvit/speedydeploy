@@ -18,7 +18,7 @@ class OnegbShared(Provider):
         fab.env.os = Gentoo()
 
         fab.env.home_dir = _("/home/virtwww/%(user)s/")
-        fab.env.remote_dir = _("%(home_dir)s%(project_name)s")
+        fab.env.remote_dir = _("%(home_dir)s%(project_name)s/")
 
         domain = _('%(project_name)s.ru')  # XXX TODO
         fab.env.server = FcgiWrapper(domain=domain)

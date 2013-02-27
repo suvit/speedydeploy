@@ -18,7 +18,7 @@ class BeelineShared(Provider):
         fab.env.os = FreeBSD()
         fab.env.shell = '/usr/bin/bash -l -c'
 
-        fab.env.home_dir = _("/web/%(user)s")
+        fab.env.home_dir = _("/web/%(user)s/")
         fab.env.remote_dir = _("/web/%(user)s/%(instance_name)s/")
 
         fab.env.cron = CronTab()

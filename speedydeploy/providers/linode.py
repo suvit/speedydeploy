@@ -13,8 +13,8 @@ class Linode(Provider):
 
         fab.env.os = Ubuntu104()
 
-        fab.env.remote_dir = _("/home/%(user)s")
-        fab.env.home_dir = _("/home/%(user)s")
+        fab.env.remote_dir = _("/home/%(user)s/")
+        fab.env.home_dir = _("/home/%(user)s/")
 
         fab.env.cron = CronTab()
 
