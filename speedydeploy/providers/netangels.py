@@ -41,7 +41,7 @@ class NetangelsVDS(Provider):
 
         fab.env.os = Debian()
 
-        fab.env.remote_dir = _("/home/%(user)s")
+        fab.env.remote_dir = _("/home/%(user)s/")
 
         fab.env.db = Maria52Database()
 

@@ -81,20 +81,14 @@ class Deployment(TaskSet):
         """ Root adds a ssh key from passed file to user's
             authorized_keys on server."""
 
-        old_user = fab.env.user
-
-        fab.env.user = 'root'
-        try:
-            self.ssh_add_key(pub_key_file)
-        finally:
-            fab.env.user = old_user
+        self.ssh_add_key(pub_key_file)
 
     @run_as('root')
     def os_add_user(self):
         fab.env.os.add_user(fab.env.user)
 
     def add_deploy_key(self):
-        fab.run('ssh-keygen -A')
+        fab.run('ssh-keygen -q')
         output = fab.run('cat ~/.ssh/id_rsa.pub')
         fab.local('echo %s > deploy_key' % output)
 
@@ -140,8 +134,9 @@ class Deployment(TaskSet):
             if key:
                 self.ssh_add_key(key)
 
-        self.db_create_user(fab.env.user, fab.env.db_pass)
-        self.db_create_db(fab.env.user, fab.env.user, fab.env.db_pass)
+        if fab.env.db:
+            self.db_create_user(fab.env.user, fab.env.db_pass)
+            self.db_create_db(fab.env.user, fab.env.user, fab.env.db_pass)
 
         self.create_virtual_env()
 
