@@ -207,10 +207,7 @@ class Gunicorn(Backend):
         with fab.settings(warn_only=True):
             fab.run(_("kill -TERM `cat %(remote_dir)s/run/gunicorn.pid`"))
 
-    def start(self):
-        if self.supervisor:
-            return
-
+    def start_command(self):
         if fab.env.project.use_django:
             if fab.env.project.django.HAS_WSGI:
                 fab.env['gunicorn_starter'] = _('gunicorn '
@@ -220,6 +217,12 @@ class Gunicorn(Backend):
         else:
             fab.env['gunicorn_starter'] = _('gunicorn '
                                             '%(project_name)s:application')
+
+    def start(self):
+        if self.supervisor:
+            return
+
+        self.start_command()
 
         with fab.cd(_('%(project_path)s')):
             fab.run(_('%(remote_dir)s/env/bin/%(gunicorn_starter)s'
@@ -234,6 +237,8 @@ class Gunicorn(Backend):
 
     @command
     def configure(self):
+        self.start_command()
+
         upload_first([_('gunicorn/%(domain)s.conf'),
                       _('nginx/%(domain)s.gunicorn.conf'),
                       'gunicorn/default.conf'],
