@@ -36,6 +36,8 @@ class SuperVisorD(Daemon):
     @command
     @run_as('root')
     def configure(self):
+        self.install_development_libraries()
+
         upload_template(_('supervisor/supervisord.conf'),
                         '/etc/supervisor/supervisord.conf',
                         fab.env,
