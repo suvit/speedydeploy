@@ -28,6 +28,10 @@ class SuperVisorD(Daemon):
     @run_as('root')
     def install_development_libraries(self):
         fab.env.os.install_package('supervisor')
+        fab.run('pip install -U supervisor')
+        fab.run('ln -s /usr/local/bin/supervisord /usr/bin/supervisord')
+        fab.run('ln -s /usr/local/bin/supervisorctl /usr/bin/supervisorctl')
+        fab.run('ln -s /etc/supervisor/supervisord.conf /etc/supervisord.conf')
 
     @command
     @run_as('root')
