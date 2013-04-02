@@ -106,6 +106,12 @@ class Backend(object): #TODO inherit Server
         if domain is not None:
             fab.env['domain'] = domain
 
+        if fab.env.project.use_django:
+            project_path = _('%(django_python_path)s')
+        else:
+            project_path = _('%(remote_dir)s/%(project_name)s')
+        fab.env['project_path'] = project_path
+
     def start(self):
         pass
 
@@ -187,13 +193,6 @@ class Gunicorn(Backend):
     namespace = 'backend'
 
     supervisor = False
-
-    def __init__(self):
-        if fab.env.project.use_django:
-            project_path = _('%(django_python_path)s')
-        else:
-            project_path = _('%(remote_dir)s/%(project_name)s')
-        fab.env['project_path'] = project_path
 
     def dirs(self):
         return ['etc/gunicorn']
