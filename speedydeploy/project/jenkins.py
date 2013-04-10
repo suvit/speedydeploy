@@ -19,7 +19,6 @@ class Jenkins(object):
         operator = '-d' if directory else '-f'
         with fab.settings(warn_only=True):
             res = fab.local('test %s %s' % (operator, path), capture=True)
-            print int(res.return_code) == 0
             return int(res.return_code) == 0
 
     def install_test_reqs(self):
