@@ -1,6 +1,6 @@
 from fabric import api as fab
 
-from ..base import Ubuntu, Ubuntu 124, Ubuntu124x64
+from ..base import Ubuntu, Ubuntu124, Ubuntu124x64
 from ..deployment import _
 from ..project.cron import CronTab
 from ..project import LogRotate

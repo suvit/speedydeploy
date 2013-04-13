@@ -5,6 +5,8 @@ from datetime import datetime, timedelta
 from fabric import api as fab, colors
 from fabric.contrib.files import exists
 
+from fab_deploy.utils import run_as
+
 from ..base import Daemon
 from ..deployment import command
 
@@ -73,6 +75,8 @@ class JenkinsServer(Daemon):
 
     namespace = 'jenkinsd'
 
+    home_dir = '/var/lib/jenkins/'
+
     @command
     def install(self):
         # getted from http://habrahabr.ru/blogs/django/132521/
@@ -85,7 +89,17 @@ class JenkinsServer(Daemon):
         fab.sudo('apt-get update')
         fab.sudo('apt-get install jenkins')
 
-        #fab.run('jenkins install plugin Cobertura')
-        #fab.run('jenkins install plugin Violations Plugin (pylint, pyflakes, pep8)')
-        #fab.run('jenkins install plugin SVN')
-        #fab.run('jenkins install plugin green ball')
+        self.install_plugins()
+
+    @run_as('jenkins')
+    def install_plugins(self):
+        with fab.cd(self.home_dir):
+            fab.run('wget http://localhost:8080/jnlpJars/jenkins-cli.jar')
+
+            jenkins_cli = 'java -jar jenkins-cli.jar'
+                          ' -s http://localhost:8080/'
+            for plugin in ['Cobertura',
+                           'Violations',
+                           'Git',
+                           'Green ball']:
+               fab.run('%s install-plugin %s' % (jenkins_cli, plugin)

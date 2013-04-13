@@ -4,3 +4,5 @@ write examples
 
 use logging to show fabric output
 add logging handlers that saves output
+add redis-server configuration
+add mongodb configuration
