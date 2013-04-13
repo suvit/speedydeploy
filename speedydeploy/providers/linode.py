@@ -21,13 +21,21 @@ class Linode(Provider):
         fab.env.logrotate = LogRotate()
 
 
-class Linode512(Linode):
+class Linode512(Linode): # OLD
     pass
 
 
-class Linode768(Linode):
+class Linode768(Linode): # OLD
     pass
 
 
-class Linode1024(Linode):
+class Linode1024(Linode): # OLD
+    pass
+
+
+class Linode1(Linode):
+    pass
+
+
+class Linode2(Linode):
     pass

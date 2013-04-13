@@ -5,6 +5,8 @@ from datetime import datetime, timedelta
 from fabric import api as fab, colors
 from fabric.contrib.files import exists
 
+from ..base import Daemon
+from ..deployment import command
 
 class Jenkins(object):
 
@@ -66,3 +68,24 @@ class Jenkins(object):
 
         fab.local('env/bin/python manage.py jenkins'
                   ' --settings=%s' % self.settings)
+
+class JenkinsServer(Daemon):
+
+    namespace = 'jenkinsd'
+
+    @command
+    def install(self):
+        # getted from http://habrahabr.ru/blogs/django/132521/
+        # XXX for Debian only
+
+        fab.sudo('wget -q -O - http://pkg.jenkins-ci.org/debian/jenkins-ci.org.key | sudo apt-key add -')
+        fab.sudo('echo "deb http://pkg.jenkins-ci.org/debian binary/"'
+                ' > /etc/apt/sources.list.d/jenkins.list')
+
+        fab.sudo('apt-get update')
+        fab.sudo('apt-get install jenkins')
+
+        #fab.run('jenkins install plugin Cobertura')
+        #fab.run('jenkins install plugin Violations Plugin (pylint, pyflakes, pep8)')
+        #fab.run('jenkins install plugin SVN')
+        #fab.run('jenkins install plugin green ball')
