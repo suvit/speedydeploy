@@ -35,6 +35,8 @@ class DNSManager(object):
 
 class LogRotate(object):
 
+    namespace = 'logrotate'
+
     config_dir = '/etc/logrotate.d/'
 
     def add_script(self, file_name, remote_name=None):

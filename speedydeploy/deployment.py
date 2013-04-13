@@ -73,8 +73,9 @@ class Deployment(TaskSet):
         fab_files.append('%s/authorized_keys' % ssh_dir, ssh_key)
 
         with fab.settings(warn_only=True): # no chmod in system
+           self.set_permissions(ssh_dir, pattern='700')
            self.set_permissions('%s/authorized_keys' % ssh_dir,
-                                pattern='644')
+                                pattern='600')
 
     @run_as('root')
     def update_rsa_key(self, pub_key_file):
