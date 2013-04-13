@@ -8,9 +8,9 @@ from ..project import LogRotate
 from .base import Provider
 
 
-class Droplet(Provider):
+class DigitalOcean(Provider):
     def __init__(self):
-        super(Linode, self).__init__()
+        super(DigitalOcean, self).__init__()
 
         fab.env.os = Ubuntu124x64()
 
@@ -19,6 +19,10 @@ class Droplet(Provider):
 
         fab.env.cron = CronTab()
         fab.env.logrotate = LogRotate()
+
+
+class Droplet(DigitalOcean):
+    pass
 
 
 class Droplet1(Droplet):
