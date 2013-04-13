@@ -23,6 +23,7 @@ class OS(object):
 
     name = NotImplemented
     version = None
+    arch = 32
 
     registry = {}
     daemon_restarter = 'invoke-rc.d'
@@ -149,6 +150,12 @@ class Ubuntu1110(Ubuntu):
 class Ubuntu124(Ubuntu):
     name = 'precise'
     version = '12.4'
+
+
+class Ubuntu124x64(Ubuntu124):
+    name = 'precise'
+    version = '12.4'
+    arch = 64
 
 
 class Windows(OS):
