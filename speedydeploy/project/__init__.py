@@ -35,13 +35,16 @@ class DNSManager(object):
 
 class LogRotate(object):
 
-    config_dir = '/etc/logrotate.d'
+    config_dir = '/etc/logrotate.d/'
 
-    def add_script(self, file_name):
-        fab.put(file_name,
-                fab.env.os.path.join(self.config_dir,
-                                     _('%(user)s')),
-                use_sudo=True)
+    def add_script(self, file_name, remote_name=None):
+
+        remote_name = remote_name or _('%(user)s')
+
+        upload_template(file_name,
+                        self.config_dir + 'speedydeploy-' + remote_name,
+                        fab.env,
+                        use_jinja=True)
 
 
 class Scrapy(object):
@@ -177,3 +180,9 @@ class Project(object):
             fab.env.os.mkdir(_("backup/%(backup_dirname)s"))
             fab.run(_("tar -czf %(project_name)s_%(backup_dirname)s.tgz"
                       " backup/%(backup_dirname)s/%(project_name)s"))
+
+    @run_as('root')
+    @command
+    def configure(self):
+        if fab.env.logrotate:
+            fab.env.logrotate.add_script('project/logrotate')

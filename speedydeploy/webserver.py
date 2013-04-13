@@ -458,5 +458,8 @@ class Nginx(FrontEnd):
         self.disable_site('%(domain)s.conf' % self.env)
         self.enable_site('%(domain)s.conf' % self.env)
 
+        if hasattr(fab.env, 'logrotate'):
+            fab.env.logrotate.add_script('nginx/logrotate', 'nginx')
+
 
 NginxServer = Nginx
