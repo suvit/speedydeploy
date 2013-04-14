@@ -199,7 +199,6 @@ class Daemon(object):
     def stop(self, pty=True):
         fab.run("%s %s stop" % (self.os.daemon_restarter, self.name), pty=pty)
 
-    # don`t use restart cause it fails when service not running
     def restart(self, pty=True):
         with fab.settings(warn_only=True):
             self.stop(pty=pty)

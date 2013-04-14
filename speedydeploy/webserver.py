@@ -452,7 +452,6 @@ class Nginx(FrontEnd):
                      use_sudo=True,
                      use_jinja=True)
 
-
         os = fab.env.os
         log_dir = os.path.join(self.log_dir, _('%(user)s'))
         os.mkdir(log_dir)
