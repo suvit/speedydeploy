@@ -96,10 +96,10 @@ class JenkinsServer(Daemon):
         with fab.cd(self.home_dir):
             fab.run('wget http://localhost:8080/jnlpJars/jenkins-cli.jar')
 
-            jenkins_cli = 'java -jar jenkins-cli.jar'
-                          ' -s http://localhost:8080/'
+            jenkins_cli = ('java -jar jenkins-cli.jar'
+                           ' -s http://localhost:8080/')
             for plugin in ['Cobertura',
                            'Violations',
                            'Git',
                            'Green ball']:
-               fab.run('%s install-plugin %s' % (jenkins_cli, plugin)
+               fab.run('%s install-plugin %s' % (jenkins_cli, plugin))

@@ -114,6 +114,17 @@ class Project(object):
         for directory in dirs:
             os.mkdir(os.path.join(_('%(remote_dir)s'), directory))
 
+        self.update_log()
+
+    @run_as('root')
+    def update_log(self):
+        # TODO move log dir to /var/log/
+        os = fab.env.os
+
+        os.change_owner(os.path.join(_('%(remote_dir)s'), 'log'),
+                        _('%(user)s'),
+                        'adm')
+
     @command(same_name=True, aliases=('update_virtual_env',))
     def install_requirements(self):
         if self.use_server:

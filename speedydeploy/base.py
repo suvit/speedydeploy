@@ -55,28 +55,31 @@ class Unix(OS):
     def mkdir(self, command):
         return fab.run('mkdir -p %s' % command)
 
-    @run_as('root')
     def set_permission(self, target, pattern):
-        # XXX
-        fab.env['target'] = target
-        fab.env['pattern'] = pattern
-
-        fab.run(_('chown -R %(user)s:%(user)s %(target)s'))
-        fab.run(_('chmod -R %(pattern)s %(target)s'))
+        user = fab.env['user']
+        self.change_owner(target, user, user)
+        self.change_mode(target, pattern)
 
     def set_permissions(self, target=None, pattern=None):
-        context = fab.env
 
         if target is None:
-            target = '%(remote_dir)s/%(project_name)s' % context
-        context['target'] = target
+            target = '%(remote_dir)s/%(project_name)s/' % context
 
         if pattern is None:
             pattern = 'u+rwX,go+rX,go-w'
-        context['pattern'] = pattern
 
-        fab.run('chown -R %(user)s:%(user)s %(target)s' % context)
-        fab.run('chmod -R %(pattern)s %(target)s' % context )
+        user = fab.env['user']
+        self.change_owner(target, user, user)
+
+        fab.run('chmod -R %(pattern)s %(target)s' % locals() )
+
+    @run_as('root')
+    def change_owner(self, target, user, group):
+        fab.run('chown -R %(user)s:%(group)s %(target)s' % locals())
+
+    @run_as('root')
+    def change_mode(self, target, pattern):
+        fab.run('chmod -R %(pattern)s %(target)s' % locals() )
 
 
 class Linux(Unix):
