@@ -23,6 +23,7 @@ class OS(object):
 
     name = NotImplemented
     version = None
+    arch = 32
 
     registry = {}
     daemon_restarter = 'invoke-rc.d'
@@ -54,28 +55,31 @@ class Unix(OS):
     def mkdir(self, command):
         return fab.run('mkdir -p %s' % command)
 
-    @run_as('root')
     def set_permission(self, target, pattern):
-        # XXX
-        fab.env['target'] = target
-        fab.env['pattern'] = pattern
-
-        fab.run(_('chown -R %(user)s:%(user)s %(target)s'))
-        fab.run(_('chmod -R %(pattern)s %(target)s'))
+        user = fab.env['user']
+        self.change_owner(target, user, user)
+        self.change_mode(target, pattern)
 
     def set_permissions(self, target=None, pattern=None):
-        context = fab.env
 
         if target is None:
-            target = '%(remote_dir)s/%(project_name)s' % context
-        context['target'] = target
+            target = '%(remote_dir)s/%(project_name)s/' % context
 
         if pattern is None:
             pattern = 'u+rwX,go+rX,go-w'
-        context['pattern'] = pattern
 
-        fab.run('chown -R %(user)s:%(user)s %(target)s' % context)
-        fab.run('chmod -R %(pattern)s %(target)s' % context )
+        user = fab.env['user']
+        self.change_owner(target, user, user)
+
+        fab.run('chmod -R %(pattern)s %(target)s' % locals() )
+
+    @run_as('root')
+    def change_owner(self, target, user, group):
+        fab.run('chown -R %(user)s:%(group)s %(target)s' % locals())
+
+    @run_as('root')
+    def change_mode(self, target, pattern):
+        fab.run('chmod -R %(pattern)s %(target)s' % locals() )
 
 
 class Linux(Unix):
@@ -151,6 +155,12 @@ class Ubuntu124(Ubuntu):
     version = '12.4'
 
 
+class Ubuntu124x64(Ubuntu124):
+    name = 'precise'
+    version = '12.4'
+    arch = 64
+
+
 class Windows(OS):
     path = nt_path
 
@@ -189,7 +199,6 @@ class Daemon(object):
     def stop(self, pty=True):
         fab.run("%s %s stop" % (self.os.daemon_restarter, self.name), pty=pty)
 
-    # don`t use restart cause it fails when service not running
     def restart(self, pty=True):
         with fab.settings(warn_only=True):
             self.stop(pty=pty)

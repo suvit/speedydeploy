@@ -1,0 +1,8 @@
+{{remote_dir}}{{project_name}}/log/*.log {
+        daily
+        missingok
+        rotate 52
+        compress
+        delaycompress
+        notifempty
+}

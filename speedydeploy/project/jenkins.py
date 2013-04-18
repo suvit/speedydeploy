@@ -5,6 +5,10 @@ from datetime import datetime, timedelta
 from fabric import api as fab, colors
 from fabric.contrib.files import exists
 
+from fab_deploy.utils import run_as
+
+from ..base import Daemon
+from ..deployment import command
 
 class Jenkins(object):
 
@@ -66,3 +70,36 @@ class Jenkins(object):
 
         fab.local('env/bin/python manage.py jenkins'
                   ' --settings=%s' % self.settings)
+
+class JenkinsServer(Daemon):
+
+    namespace = 'jenkinsd'
+
+    home_dir = '/var/lib/jenkins/'
+
+    @command
+    def install(self):
+        # getted from http://habrahabr.ru/blogs/django/132521/
+        # XXX for Debian only
+
+        fab.sudo('wget -q -O - http://pkg.jenkins-ci.org/debian/jenkins-ci.org.key | sudo apt-key add -')
+        fab.sudo('echo "deb http://pkg.jenkins-ci.org/debian binary/"'
+                ' > /etc/apt/sources.list.d/jenkins.list')
+
+        fab.sudo('apt-get update')
+        fab.sudo('apt-get install jenkins')
+
+        self.install_plugins()
+
+    @run_as('jenkins')
+    def install_plugins(self):
+        with fab.cd(self.home_dir):
+            fab.run('wget http://localhost:8080/jnlpJars/jenkins-cli.jar')
+
+            jenkins_cli = ('java -jar jenkins-cli.jar'
+                           ' -s http://localhost:8080/')
+            for plugin in ['Cobertura',
+                           'Violations',
+                           'Git',
+                           'Green ball']:
+               fab.run('%s install-plugin %s' % (jenkins_cli, plugin))

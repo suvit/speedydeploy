@@ -453,10 +453,15 @@ class Nginx(FrontEnd):
                      use_jinja=True)
 
         os = fab.env.os
-        os.mkdir(os.path.join(self.log_dir, _('%(user)s')))
+        log_dir = os.path.join(self.log_dir, _('%(user)s'))
+        os.mkdir(log_dir)
+        os.change_owner(log_dir, 'www-data', 'adm')
 
         self.disable_site('%(domain)s.conf' % self.env)
         self.enable_site('%(domain)s.conf' % self.env)
+
+        if hasattr(fab.env, 'logrotate'):
+            fab.env.logrotate.add_script('nginx/logrotate', 'nginx')
 
 
 NginxServer = Nginx

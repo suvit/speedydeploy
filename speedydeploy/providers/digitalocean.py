@@ -1,6 +1,6 @@
 from fabric import api as fab
 
-from ..base import Ubuntu, Ubuntu104
+from ..base import Ubuntu, Ubuntu124, Ubuntu124x64
 from ..deployment import _
 from ..project.cron import CronTab
 from ..project import LogRotate
@@ -8,11 +8,11 @@ from ..project import LogRotate
 from .base import Provider
 
 
-class Linode(Provider):
+class DigitalOcean(Provider):
     def __init__(self):
-        super(Linode, self).__init__()
+        super(DigitalOcean, self).__init__()
 
-        fab.env.os = Ubuntu104()
+        fab.env.os = Ubuntu124x64()
 
         fab.env.remote_dir = _("/home/%(user)s/")
         fab.env.home_dir = _("/home/%(user)s/")
@@ -21,21 +21,13 @@ class Linode(Provider):
         fab.env.logrotate = LogRotate()
 
 
-class Linode512(Linode): # OLD
+class Droplet(DigitalOcean):
     pass
 
 
-class Linode768(Linode): # OLD
+class Droplet1(Droplet):
     pass
 
 
-class Linode1024(Linode): # OLD
-    pass
-
-
-class Linode1(Linode):
-    pass
-
-
-class Linode2(Linode):
+class Droplet2(Droplet):
     pass

@@ -14,4 +14,11 @@ from ..utils import upload_template, upload_first
 
 
 class Redis(Daemon):
-    pass
+    namespace = 'redis'
+
+    def install_development_libraries(self):
+        fab.env.os.install_package('redis-server')
+
+    @command
+    def install(self):
+        self.install_development_libraries()

@@ -30,7 +30,6 @@ class Memcache(Daemon):
         return ["etc/memcache/",
                ]
 
-
     @run_as('root')
     def put_config(self):
 
@@ -80,7 +79,6 @@ class Memcache(Daemon):
 class PyLibMC(Memcache):
     @run_as('root')
     def install_development_libraries(self):
-        super(PyLibMC, self).install_development_libraries()
         os = fab.env.os
         if isinstance(os, Ubuntu) and os.version.split('.') == ['10','4']:
             # XXX default libmemcached-dev in Ubuntu lucid
@@ -88,9 +86,11 @@ class PyLibMC(Memcache):
             os.install_package('python-software-properties')
             fab.run('add-apt-repository ppa:muffinresearch/pylibmc-build-deps')
             fab.run('apt-get update')
+
+        super(PyLibMC, self).install_development_libraries()
         os.install_package('libmemcached-dev')
 
     def install_requirements(self):
         with fab.cd(_('%(remote_dir)s/')):
             fab.run('env/bin/pip install -U pylibmc')
-            fab.run('env/bin/pip install git://github.com/jbalogh/django-pylibmc')
+            fab.run('env/bin/pip install django-pylibmc')
