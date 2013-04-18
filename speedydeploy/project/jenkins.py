@@ -103,3 +103,6 @@ class JenkinsServer(Daemon):
                            'Git',
                            'Green ball']:
                fab.run('%s install-plugin %s' % (jenkins_cli, plugin))
+
+            fab.run('%s safe-restart' % jenkins_cli)
+          
