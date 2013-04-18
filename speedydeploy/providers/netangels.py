@@ -2,6 +2,7 @@ from fabric import api as fab
 
 from ..base import Debian
 from ..deployment import _
+from ..project import LogRotate
 from ..project.cron import CronTab, BCronTab
 from ..database import Maria52Database
 
