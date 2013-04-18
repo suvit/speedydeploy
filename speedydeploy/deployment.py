@@ -142,3 +142,20 @@ class Deployment(TaskSet):
 
         # need setting for this
         fab.run(_('echo root > %(remote_dir)s/.forward'))
+
+    def update(self):
+        project = fab.env.project
+
+        if project.use_django:
+            project.django.reload()
+
+        if project.use_celery:
+            self.celery_configure()
+        if project.use_sphinxsearch:
+            self.sphinxsearch_configure()
+        if project.use_memcache:
+            self.memcache_configure()
+
+        if project.use_server:
+            self.server_configure()
+            self.server_reload()
