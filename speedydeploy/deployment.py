@@ -69,7 +69,6 @@ class Deployment(TaskSet):
             else:
                 ssh_dir = _('/home/%(user)s/.ssh')
 
-        os = fab.env.os
         fab.env.os.mkdir(ssh_dir)
         fab_files.append('%s/authorized_keys' % ssh_dir, ssh_key)
 
