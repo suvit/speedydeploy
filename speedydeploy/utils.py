@@ -18,7 +18,7 @@ class DeployTemplateNotFound(Exception):
         return 'NotFound: ' + repr(self.name)
  
     def __str__(self):
-        return '%s %s' % (super(DeployTemplateNotFound, self), self.name)
+        return repr(self)
 
 
 common_template_dir = os.path.abspath(os.path.join(os.path.dirname(__file__),
