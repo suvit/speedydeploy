@@ -12,6 +12,8 @@ from ..deployment import command
 
 class Jenkins(object):
 
+    namespace = 'jenkins'
+
     update_status_file = '.reqs_updated'
     test_repo = 'git+ssh://git@bitbucket.org/suvitorg/django-pwutils#egg=pwutils[tests]'
 
@@ -34,6 +36,11 @@ class Jenkins(object):
 
         if future:
             self.install_future_reqs()
+
+    @command
+    def install_reqs(self):
+        self.install_test_reqs()
+        self.install_project_reqs()
 
     def install_future_reqs(self):
         if self.local_exist('requirements/future.txt'):
