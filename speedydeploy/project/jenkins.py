@@ -15,7 +15,7 @@ class Jenkins(object):
     update_status_file = '.reqs_updated'
     test_repo = 'git+ssh://git@bitbucket.org/suvitorg/django-pwutils#egg=pwutils[tests]'
 
-    def __init__(self, settings='settings_jenkins'):
+    def __init__(self, settings='pwutils.settings.jenkins'):
         self.settings = settings
         fab.env.setdefault('expire_timedelta', timedelta(days=1))
 
@@ -27,7 +27,7 @@ class Jenkins(object):
 
     def install_test_reqs(self):
         fab.local('env/bin/pip install'
-                  ' %s' % self.test_repo)
+                  ' -U %s' % self.test_repo)
 
     def install_project_reqs(self, future=False):
         fab.local('env/bin/pip install -U -r requirements.txt')
