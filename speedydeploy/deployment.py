@@ -69,14 +69,14 @@ class Deployment(TaskSet):
             else:
                 ssh_dir = _('/home/%(user)s/.ssh')
 
-        os = fab.env.os
-        fab.env.os.mkdir(ssh_dir)
+        remote_os = fab.env.os
+        remote_os.mkdir(ssh_dir)
         fab_files.append('%s/authorized_keys' % ssh_dir, ssh_key)
 
         with fab.settings(warn_only=True): # no chmod in system
-           os.set_permissions(ssh_dir, pattern='700')
-           os.set_permissions('%s/authorized_keys' % ssh_dir,
-                                pattern='600')
+           remote_os.set_permissions(ssh_dir, pattern='700')
+           remote_os.set_permissions('%s/authorized_keys' % ssh_dir,
+                                     pattern='600')
 
     @run_as('root')
     def update_rsa_key(self, pub_key_file):
@@ -135,3 +135,20 @@ class Deployment(TaskSet):
 
         # need setting for this
         fab.run(_('echo root > %(remote_dir)s/.forward'))
+
+    def update(self):
+        project = fab.env.project
+
+        if project.use_django:
+            project.django.reload()
+
+        if project.use_celery:
+            self.celery_configure()
+        if project.use_sphinxsearch:
+            self.sphinxsearch_configure()
+        if project.use_memcache:
+            self.memcache_configure()
+
+        if project.use_server:
+            self.server_configure()
+            self.server_reload()

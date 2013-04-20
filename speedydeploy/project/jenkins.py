@@ -12,10 +12,12 @@ from ..deployment import command
 
 class Jenkins(object):
 
+    namespace = 'jenkins'
+
     update_status_file = '.reqs_updated'
     test_repo = 'git+ssh://git@bitbucket.org/suvitorg/django-pwutils#egg=pwutils[tests]'
 
-    def __init__(self, settings='settings_jenkins'):
+    def __init__(self, settings='pwutils.settings.jenkins'):
         self.settings = settings
         fab.env.setdefault('expire_timedelta', timedelta(days=1))
 
@@ -27,13 +29,18 @@ class Jenkins(object):
 
     def install_test_reqs(self):
         fab.local('env/bin/pip install'
-                  ' %s' % self.test_repo)
+                  ' -U %s' % self.test_repo)
 
     def install_project_reqs(self, future=False):
         fab.local('env/bin/pip install -U -r requirements.txt')
 
         if future:
             self.install_future_reqs()
+
+    @command
+    def install_reqs(self):
+        self.install_test_reqs()
+        self.install_project_reqs()
 
     def install_future_reqs(self):
         if self.local_exist('requirements/future.txt'):
@@ -103,3 +110,6 @@ class JenkinsServer(Daemon):
                            'Git',
                            'Green ball']:
                fab.run('%s install-plugin %s' % (jenkins_cli, plugin))
+
+            fab.run('%s safe-restart' % jenkins_cli)
+          
