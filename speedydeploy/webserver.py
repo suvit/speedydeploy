@@ -344,7 +344,10 @@ class ApacheServer(FrontEnd):
 
 class Apache2Server(ApacheServer):
 
+    name = 'apache'
+
     config_dir = '/etc/apache2/'
+    sites_dir = config_dir + 'sites-available/'
 
     def __init__(self, **kwargs):
         kwargs.setdefault('name', 'apache2')
@@ -353,9 +356,10 @@ class Apache2Server(ApacheServer):
     @run_as('root')
     def configure(self):
         upload_template(_('apache/%(domain)s.conf'),
-                        fab.env.os.path.join(self.config_dir,
-                                             _('sites-available/%(domain)s.conf') ),
+                        fab.env.os.path.join(self.sites_dir,
+                                             _('%(domain)s.conf') ),
                         fab.env,
+                        use_sudo=True,
                         use_jinja=True)
 
     @run_as('root')
@@ -380,7 +384,10 @@ class Apache2Server(ApacheServer):
 
 class Nginx(FrontEnd):
 
+    name = 'nginx'
+
     config_dir = '/etc/nginx/'
+    sites_dir = config_dir + 'sites-available/'
     log_dir = '/var/log/nginx/'
 
     def __init__(self, **kwargs):
@@ -439,15 +446,18 @@ class Nginx(FrontEnd):
                 files.append(filename)
 
     @run_as('root')
-    def configure(self):
+    def configure(self, template=None):
+
+        if template is None:
+            template = [_('nginx/%(domain)s.conf'),
+                        'nginx/default.conf']
 
         super(Nginx, self).configure()
 
         self.update_static_files() #added static_files var for fab.env
 
-        upload_first([_('nginx/%(domain)s.conf'),
-                      'nginx/default.conf'],
-                     fab.env.os.path.join(self.config_dir, _('sites-available/%(domain)s.conf') ),
+        upload_first(template,
+                     fab.env.os.path.join(self.sites_dir, _('%(domain)s.conf') ),
                      fab.env,
                      use_sudo=True,
                      use_jinja=True)

@@ -41,3 +41,9 @@ class EX6(Hetzner):
     pass
 
 
+class EX8(Hetzner):
+    pass
+
+
+class EX8S(Hetzner):
+    pass

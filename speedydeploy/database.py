@@ -9,7 +9,7 @@ from fab_deploy.mysql import mysql_execute, mysql_create_user, \
     mysql_create_db, mysql_grant_permissions
 from fab_deploy.utils import run_as
 
-from base import Daemon
+from base import Daemon, CommandNamespace
 from deployment import command
 
 
@@ -18,6 +18,7 @@ class Database(object):
     version = None
 
     namespace = 'db'
+    __metaclass__ = CommandNamespace
 
     def execute(self, sql):
         raise NotImplementedError

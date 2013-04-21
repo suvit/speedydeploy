@@ -7,10 +7,12 @@ from fabric.contrib.files import exists
 
 from fab_deploy.utils import run_as
 
-from ..base import Daemon
+from ..base import _, Daemon, ObjectWithCommands
 from ..deployment import command
+from ..utils import upload_first
 
-class Jenkins(object):
+
+class Jenkins(ObjectWithCommands):
 
     namespace = 'jenkins'
 
@@ -67,6 +69,7 @@ class Jenkins(object):
             print colors.white('update requirements not needed')
             return False
 
+    @command
     def test_project(self, future=False):
         if not self.local_exist('env', directory=True):
             fab.local('virtualenv env --system-site-packages')
@@ -83,6 +86,10 @@ class JenkinsServer(Daemon):
     namespace = 'jenkinsd'
 
     home_dir = '/var/lib/jenkins/'
+
+    def __init__(self, **kwargs):
+        kwargs.setdefault('daemon_name', 'jenkins')
+        super(JenkinsServer, self).__init__(**kwargs)
 
     @command
     def install(self):
@@ -112,4 +119,12 @@ class JenkinsServer(Daemon):
                fab.run('%s install-plugin %s' % (jenkins_cli, plugin))
 
             fab.run('%s safe-restart' % jenkins_cli)
-          
+
+    def configure_webserver(self):
+        server = fab.env.server
+        server.configure(template=[_('nginx/%(domain)s.conf'),
+                                   'jenkins/%s.conf' % server.name])
+
+    @command
+    def configure(self):
+        self.configure_webserver()

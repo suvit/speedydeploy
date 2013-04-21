@@ -13,10 +13,28 @@ from fab_deploy.utils import run_as, detect_os
 
 _ = lambda s: s % fab.env
 
+class CommandNamespace(type):
 
-class FabricNamespace(object):
+    _registry = {}
+
+    def __new__(cls, name, bases, attrs):
+        new_class = super(CommandNamespace,
+                     cls).__new__(cls, name, bases, attrs)
+        cls.register(new_class)
+        return new_class
+
+    @classmethod
+    def register(cls, ns_class):
+        cls._registry[ns_class.namespace] = ns_class
+
+    @classmethod
+    def get(cls, name):
+        return cls._registry.get(name)
+
+
+class ObjectWithCommands(object):
     namespace = None
-    methods = ()
+    __metaclass__ = CommandNamespace
 
 
 class OS(object):
@@ -185,10 +203,14 @@ class Windows8(Windows):
 
 class Daemon(object):
 
+    namespace = None
+    __metaclass__ = CommandNamespace
+
     def __init__(self, daemon_name, os=None):
         if os is None:
             os = fab.env.os
         self.name = daemon_name
+
         self.os = os
 
     @run_as('root')

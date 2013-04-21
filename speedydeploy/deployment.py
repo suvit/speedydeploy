@@ -13,8 +13,9 @@ from fab_deploy.utils import run_as
 
 from taskset import TaskSet, task
 
-from base import _, OS, Debian, Ubuntu, Ubuntu104, Daemon
+from base import _, OS, Debian, Ubuntu, Ubuntu104, Daemon, CommandNamespace
 from utils import upload_template, upload_first
+
 
 
 def command(func=None, namespace=None, same_name=False, aliases=()):
@@ -22,7 +23,9 @@ def command(func=None, namespace=None, same_name=False, aliases=()):
         #@wraps(view_func)
         def f(self, *args, **kwargs):
 
-            ns_obj = getattr(fab.env, namespace, fab.env)
+            ns_obj = getattr(fab.env, namespace, None)
+            if ns_obj is None:
+                ns_obj = CommandNamespace.get(namespace)()
             return getattr(ns_obj, view_func.__name__)(*args, **kwargs)
 
         attr_name = '_'.join(filter(None, (namespace,
