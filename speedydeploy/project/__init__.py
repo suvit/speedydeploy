@@ -19,6 +19,7 @@ from sphinxsearch import *
 from supervisor import SuperVisorD, SuperVisor
 from cron import CronTab
 from memcache import Memcache, PyLibMC
+from jenkins import Jenkins
 
 
 class DNSManager(object):
