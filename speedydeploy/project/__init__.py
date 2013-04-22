@@ -47,7 +47,8 @@ class LogRotate(object):
         upload_template(file_name,
                         self.config_dir + 'speedydeploy-' + remote_name,
                         fab.env,
-                        use_jinja=True)
+                        use_jinja=True,
+                        backup=False)
 
 
 class Scrapy(object):
