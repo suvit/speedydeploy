@@ -179,6 +179,14 @@ class Ubuntu124x64(Ubuntu124):
     arch = 64
 
 
+class SentOS(Linux):
+    pass
+
+
+class SentOS64(Linux):
+    arch = 64
+
+
 class Windows(OS):
     path = nt_path
 
