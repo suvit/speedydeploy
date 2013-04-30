@@ -130,7 +130,7 @@ class Deployment(TaskSet):
             if key:
                 self.ssh_add_key(key)
 
-        if fab.env.db:
+        if 'db' in fab.env:
             self.db_create_user(fab.env.user, fab.env.db_pass)
             self.db_create_db(fab.env.user, fab.env.user, fab.env.db_pass)
 

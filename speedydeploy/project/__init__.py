@@ -10,7 +10,7 @@ from fabric.contrib.files import exists
 from fab_deploy.system import ssh_add_key
 from fab_deploy.utils import run_as
 
-from ..base import _, Daemon, Ubuntu
+from ..base import _, Daemon, Debian, RedHat, Ubuntu
 from ..deployment import command
 from ..utils import upload_template, upload_first
 
@@ -163,8 +163,11 @@ class Project(object):
         if self.use_pil:
             # must have to compile PIL jpeg support
             # XXX remove to PIL object
-            os.install_package('libjpeg62 libjpeg62-dev')
-            os.install_package('libfreetype6 libfreetype6-dev')
+            if isinstance(os, Debian):
+                os.install_package('libjpeg62 libjpeg62-dev')
+                os.install_package('libfreetype6 libfreetype6-dev')
+            elif isinstance(os, RedHat):
+                os.install_package('zlib-devel libjpeg-devel freetype-devel')
 
         for name in ('os', 'server', 'db', 'supervisor',
                      'scrapy', 'vcs', 'celery', 'sphinxsearch',

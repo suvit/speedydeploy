@@ -55,14 +55,8 @@ class OS(object):
         os = os_class()
         fab.env.os = os
 
-    @run_as('root')
     def install_package(self, package):
         raise NotImplementedError()
-
-    @run_as('root')
-    def install_development_libraries(self):
-        # must have to compile mysql and etc
-        self.install_package('python-dev')
 
 
 class Unix(OS):
@@ -101,7 +95,14 @@ class Unix(OS):
 
 
 class Linux(Unix):
-    pass
+    def add_user(self, user):
+        return fab.sudo('adduser %s' % user)
+
+    def del_user(self, user):
+        return fab.sudo('deluser %s' % user)
+
+    def install_development_libraries(self):
+        pass
 
 
 class Debian(Linux):
@@ -109,16 +110,19 @@ class Debian(Linux):
     def install_package(self, package):
         return fab.sudo('apt-get install -q -y %s' % package)
 
-    def add_user(self, user):
-        return fab.sudo('adduser %s' % user)
-
-    def del_user(self, user):
-        return fab.sudo('deluser %s' % user)
-
-    @run_as('root')
     def install_development_libraries(self):
         super(Debian, self).install_development_libraries()
         self.install_package('sudo')
+        self.install_package('python-dev')
+
+
+class RedHat(Linux):
+    def install_package(self, package):
+        return fab.sudo('yum install -q -y %s' % package)
+
+    def install_development_libraries(self):
+        super(RedHat, self).install_development_libraries()
+        self.install_package('python-devel')
 
 
 class Gentoo(Linux):
@@ -179,11 +183,11 @@ class Ubuntu124x64(Ubuntu124):
     arch = 64
 
 
-class SentOS(Linux):
+class SentOS(RedHat):
     pass
 
 
-class SentOS64(Linux):
+class SentOS64(RedHat):
     arch = 64
 
 
