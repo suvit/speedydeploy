@@ -9,7 +9,7 @@ from .base import Provider
 
 class Hetzner(Provider):
     def __init__(self):
-        super(Linode, self).__init__()
+        super(Hetzner, self).__init__()
 
         fab.env.remote_dir = _("/home/%(user)s/")
         fab.env.home_dir = _("/home/%(user)s/")
