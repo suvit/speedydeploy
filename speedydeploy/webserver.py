@@ -348,6 +348,8 @@ class Apache2Server(ApacheServer):
 
     config_dir = '/etc/apache2/'
     sites_dir = config_dir + 'sites-available/'
+    log_dir = '/var/log/apache2/'
+    log_user = 'www-data'
 
     def __init__(self, **kwargs):
         kwargs.setdefault('name', 'apache2')
@@ -389,6 +391,7 @@ class Nginx(FrontEnd):
     config_dir = '/etc/nginx/'
     sites_dir = config_dir + 'sites-available/'
     log_dir = '/var/log/nginx/'
+    log_user = 'www-data'
 
     def __init__(self, **kwargs):
         kwargs.setdefault('name', 'nginx')
@@ -465,7 +468,7 @@ class Nginx(FrontEnd):
         os = fab.env.os
         log_dir = os.path.join(self.log_dir, _('%(user)s'))
         os.mkdir(log_dir)
-        os.change_owner(log_dir, 'www-data', 'adm')
+        os.change_owner(log_dir, self.log_user, 'adm')
 
         self.disable_site('%(domain)s.conf' % self.env)
         self.enable_site('%(domain)s.conf' % self.env)
