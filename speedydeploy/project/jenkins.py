@@ -74,6 +74,8 @@ class Jenkins(ObjectWithCommands):
         if not self.local_exist('env', directory=True):
             fab.local('virtualenv env --system-site-packages')
 
+        fab.local("find . -name '*.pyc' -delete")
+
         if self.need_update():
             self.install_test_reqs()
             self.install_project_reqs(future=future)
