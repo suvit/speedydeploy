@@ -227,6 +227,7 @@ class Gunicorn(Backend):
             fab.run(_('%(remote_dir)s/env/bin/%(gunicorn_starter)s'
                       ' -c %(remote_dir)s/etc/gunicorn/conf.py'))
 
+    @command
     def reload(self):
         with fab.settings(warn_only=True):
             fab.run(_("kill -HUP `cat %(remote_dir)s/run/gunicorn.pid`"))
