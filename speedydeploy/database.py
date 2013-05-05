@@ -107,7 +107,6 @@ class MysqlDatabase(DatabaseDaemon):
     def remotecopy(self):
         fab.run(_("scp -C %(user)s@%(host)s:/tmp/%(database_production_name)s_database.sql %(database_name)s_database.sql"))
 
-    @run_as('root')
     def backup_copy(self):
         self.stop()
         try:
@@ -168,7 +167,6 @@ class MariaDatabase(MysqlDatabase):
 deb http://mirror2.hs-esslingen.de/mariadb/repo/%(db_version)s/ubuntu %(os_name)s main
 deb-src http://mirror2.hs-esslingen.de/mariadb/repo/%(db_version)s/ubuntu %(os_name)s main'''
 
-    @run_as('root')
     def append_source(self):
         source = self.source_list % {'db_version':self.version,
                                      'os_name':fab.env.os.name,
@@ -177,8 +175,8 @@ deb-src http://mirror2.hs-esslingen.de/mariadb/repo/%(db_version)s/ubuntu %(os_n
                                   source):
             fab_files.append('/etc/apt/sources.list.d/mariadb.list', source)
 
-            fab.run('apt-key adv --recv-keys --keyserver keyserver.ubuntu.com 1BB943DB')
-            fab.run('apt-get update')
+            fab.sudo('apt-key adv --recv-keys --keyserver keyserver.ubuntu.com 1BB943DB')
+            fab.sudo('apt-get update')
 
     def install_development_libraries(self):
         os = fab.env.os

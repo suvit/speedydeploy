@@ -25,20 +25,18 @@ class RabbitMQ(Daemon):
             daemon_name = 'rabbitmq-server'
         super(RabbitMQ, self).__init__(daemon_name)
 
-    @run_as('root')
     def install_development_libraries(self):
         os = fab.env.os
         os.install_package('rabbitmq-server')
 
     @command
-    @run_as('root')
     def configure(self):
         self.setup_user()
 
     def setup_user(self):
-        fab.run(_('rabbitmqctl add_user %(mq_user)s %(mq_pass)s'))
-        fab.run(_('rabbitmqctl add_vhost %(mq_domain)s'))
-        fab.run(_('rabbitmqctl set_permissions'
+        fab.sudo(_('rabbitmqctl add_user %(mq_user)s %(mq_pass)s'))
+        fab.sudo(_('rabbitmqctl add_vhost %(mq_domain)s'))
+        fab.sudo(_('rabbitmqctl set_permissions'
                   ' -p %(mq_domain)s %(mq_user)s'
                   ' ".*" ".*" ".*"'))
 
@@ -60,12 +58,12 @@ class Celery(Daemon):
         return ['etc/celery']
 
     @command
-    @run_as('root')
     def configure_daemon(self):
         upload_template('celery/celeryd',
                         _("/etc/init.d/%(instance_name)s_celeryd"),
                         context=fab.env,
                         use_jinja=True,
+                        use_sudo=True,
                         mode=0755,
                        )
 
@@ -117,7 +115,6 @@ class Celery(Daemon):
             crontab.update(_('*/10 * * * * cat %(remote_dir)s/run/celeryd.pid | xargs ps -p ${1} | grep -v TTY >/dev/null || exec %(remote_dir)s/utils/celery_check_running.sh >/dev/null'),
                            marker='check_celery_running')
 
-    @run_as('root')
     def install_development_libraries(self):
         os = fab.env.os
         if self.broker:

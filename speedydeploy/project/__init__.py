@@ -119,7 +119,6 @@ class Project(object):
 
         self.update_log()
 
-    @run_as('root')
     def update_log(self):
         # TODO move log dir to /var/log/
         os = fab.env.os
@@ -150,7 +149,6 @@ class Project(object):
                 fab.run(_("env/bin/pip install -U -r"
                           " %(project_name)s/requirements.txt"))
 
-    @run_as('root')
     @command(same_name=True)
     def install_development_libraries(self):
         os = fab.env.os
@@ -176,7 +174,6 @@ class Project(object):
             if getattr(self, 'use_' + name, False):
                 getattr(fab.env, name).install_development_libraries()
 
-    @run_as('root')
     @command(same_name=True)
     def install_setuptools(self):
         os = fab.env.os.install_package("python-setuptools build-essential")
@@ -184,7 +181,6 @@ class Project(object):
         fab.sudo("easy_install distribute")
         fab.sudo("easy_install pip")
 
-    @run_as('root')
     @command(same_name=True)
     def install_virtualenv(self):
         fab.sudo("easy_install virtualenv")
@@ -200,7 +196,6 @@ class Project(object):
             fab.run(_("tar -czf %(project_name)s_%(backup_dirname)s.tgz"
                       " backup/%(backup_dirname)s/%(project_name)s"))
 
-    @run_as('root')
     @command
     def configure(self):
         if fab.env.logrotate:

@@ -25,22 +25,21 @@ class SuperVisorD(Daemon):
             daemon_name = 'supervisord'
         super(SuperVisorD, self).__init__(daemon_name)
 
-    @run_as('root')
     def install_development_libraries(self):
         fab.env.os.install_package('supervisor')
-        fab.run('pip install -U supervisor')
-        fab.run('ln -s /usr/local/bin/supervisord /usr/bin/supervisord')
-        fab.run('ln -s /usr/local/bin/supervisorctl /usr/bin/supervisorctl')
-        fab.run('ln -s /etc/supervisor/supervisord.conf /etc/supervisord.conf')
+        fab.sudo('pip install -U supervisor')
+        fab.sudo('ln -s /usr/local/bin/supervisord /usr/bin/supervisord')
+        fab.sudo('ln -s /usr/local/bin/supervisorctl /usr/bin/supervisorctl')
+        fab.sudo('ln -s /etc/supervisor/supervisord.conf /etc/supervisord.conf')
 
     @command
-    @run_as('root')
     def configure(self):
         self.install_development_libraries()
 
         upload_template(_('supervisor/supervisord.conf'),
                         '/etc/supervisor/supervisord.conf',
                         fab.env,
+                        use_sudo=True,
                         use_jinja=True)
 
 
@@ -85,7 +84,6 @@ class SuperVisor(object):
         else:
             self.update()
 
-    @run_as('root')
     def install_development_libraries(self):
         fab.env.supervisord.install_development_libraries()
 

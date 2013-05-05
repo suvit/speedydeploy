@@ -35,7 +35,6 @@ class SphinxSearch(Daemon):
                ]
 
     @command
-    @run_as('root')
     def configure_daemon(self):
         upload_template('sphinxsearch/searchd',
                         _("/etc/init.d/%(instance_name)s_searchd"),
@@ -61,7 +60,6 @@ class SphinxSearch(Daemon):
                         mode=0755,
                         )
 
-    @run_as('root')
     def install_package(self):
         #fab.env.os.install_package('sphinxsearch')
         fab.run('wget http://sphinxsearch.com/files/%s.tar.gz' % self.version)
@@ -72,10 +70,9 @@ class SphinxSearch(Daemon):
                 configure += ' --without-mysql'
             fab.run(configure)
             fab.run('make')
-            fab.run('make install')
+            fab.sudo('make install')
         fab.run('rm -Rf %s %s.tar.gz' % (self.version, self.version))
 
-    @run_as('root')
     def install_development_libraries(self):
         os = fab.env.os
 
@@ -84,7 +81,6 @@ class SphinxSearch(Daemon):
 
         fab.env.db.install_headers()
 
-    @run_as('root')
     def install(self, reindex=False):
         with fab.settings(warn_only=True):
             self.stop()
@@ -148,7 +144,6 @@ class SphinxSearch202(SphinxSearch201):
 
     use_deb = property(lambda: isinstance(fab.env.os, Ubuntu))
 
-    @run_as('root')
     def install_package(self):
         if self.use_deb:
             filename = '%s-lucid_i386.deb' %\
@@ -156,7 +151,7 @@ class SphinxSearch202(SphinxSearch201):
 
             fab.run('wget http://sphinxsearch.com/files/%s' % filename)
             try:
-                fab.run('dpkg -I %s' % filename)
+                fab.sudo('dpkg -I %s' % filename)
             finally:
                 fab.run('rm -R %s' % filename)
         else:

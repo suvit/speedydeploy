@@ -30,7 +30,6 @@ class Memcache(Daemon):
         return ["etc/memcache/",
                ]
 
-    @run_as('root')
     def put_config(self):
 
         upload_template('memcached/memcached.conf',
@@ -40,12 +39,12 @@ class Memcache(Daemon):
         #upload_template('memcached/memcached',
         #                "/etc/init.d/memcached",
         #                mode=0755,
+        #                use_sudo=True,
         #                use_jinja=True)
 
         fab.run('touch %s' % self.pid_file)
         fab.run('chown nobody %s' % self.pid_file)
 
-    @run_as('root')
     def install(self):
 
         with fab.settings(warn_only=True):
@@ -59,7 +58,6 @@ class Memcache(Daemon):
         self.put_config()
         self.restart()
 
-    @run_as('root')
     def install_development_libraries(self):
         fab.env.os.install_package('memcached')
 
@@ -77,15 +75,14 @@ class Memcache(Daemon):
 
 
 class PyLibMC(Memcache):
-    @run_as('root')
     def install_development_libraries(self):
         os = fab.env.os
         if isinstance(os, Ubuntu) and os.version.split('.') == ['10','4']:
             # XXX default libmemcached-dev in Ubuntu lucid
             # is version 0.31. its too small for pylibmc
             os.install_package('python-software-properties')
-            fab.run('add-apt-repository ppa:muffinresearch/pylibmc-build-deps')
-            fab.run('apt-get update')
+            fab.sudo('add-apt-repository ppa:muffinresearch/pylibmc-build-deps')
+            fab.sudo('apt-get update')
 
         super(PyLibMC, self).install_development_libraries()
         os.install_package('libmemcached-dev')
