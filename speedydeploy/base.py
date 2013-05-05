@@ -61,11 +61,19 @@ class OS(object):
 
 class Unix(OS):
 
-    def rm(self, command):
-        return fab.run('rm -rf %s' % command)
+    def rm(self, command, sudo=False):
+        if sudo:
+            run = fab.sudo
+        else:
+            run = fab.run
+        return run('rm -rf %s' % command)
 
-    def mkdir(self, command):
-        return fab.run('mkdir -p %s' % command)
+    def mkdir(self, command, sudo=False):
+        if sudo:
+            run = fab.sudo
+        else:
+            run = fab.run
+        return run('mkdir -p %s' % command)
 
     def set_permission(self, target, pattern):
         user = fab.env['user']
@@ -85,13 +93,11 @@ class Unix(OS):
 
         fab.run('chmod -R %(pattern)s %(target)s' % locals() )
 
-    @run_as('root')
     def change_owner(self, target, user, group):
-        fab.run('chown -R %(user)s:%(group)s %(target)s' % locals())
+        fab.sudo('chown -R %(user)s:%(group)s %(target)s' % locals())
 
-    @run_as('root')
     def change_mode(self, target, pattern):
-        fab.run('chmod -R %(pattern)s %(target)s' % locals() )
+        fab.sudo('chmod -R %(pattern)s %(target)s' % locals() )
 
 
 class Linux(Unix):
@@ -225,19 +231,16 @@ class Daemon(object):
 
         self.os = os
 
-    @run_as('root')
     def start(self, pty=True):
-        fab.run("%s %s start" % (self.os.daemon_restarter, self.name), pty=pty)
+        fab.sudo("%s %s start" % (self.os.daemon_restarter, self.name), pty=pty)
 
-    @run_as('root')
     def stop(self, pty=True):
-        fab.run("%s %s stop" % (self.os.daemon_restarter, self.name), pty=pty)
+        fab.sudo("%s %s stop" % (self.os.daemon_restarter, self.name), pty=pty)
 
     def restart(self, pty=True):
         with fab.settings(warn_only=True):
             self.stop(pty=pty)
         self.start(pty=pty)
 
-    @run_as('root')
     def status(self):
         fab.run("%s %s status" % (self.os.daemon_restarter, self.name))

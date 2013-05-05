@@ -126,6 +126,8 @@ class Deployment(TaskSet):
                 self.update_rsa_key(key) # for root
 
             self.os_add_user()
+            #self.os_add_group('speedydeploy')
+            #self.os_add_user_to_group(fab.env.user, 'speedydeploy')
 
             if key:
                 self.ssh_add_key(key)

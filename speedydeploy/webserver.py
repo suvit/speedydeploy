@@ -33,9 +33,8 @@ class FrontEnd(Daemon):
                  " %(server_dir)ssites-enabled/%(name)s" % locals() )
 
     @command
-    @run_as('root')
     def enable(self):
-        fab.run(_("ln -s %(server_dir)ssites-available/%(domain)s.conf"
+        fab.sudo(_("ln -s %(server_dir)ssites-available/%(domain)s.conf"
                   " %(server_dir)ssites-enabled/%(domain)s.conf"))
 
     def disable_site(self, name):
@@ -43,9 +42,8 @@ class FrontEnd(Daemon):
         fab.sudo("rm -f %(server_dir)ssites-enabled/%(name)s" % locals() )
 
     @command
-    @run_as('root')
     def disable(self):
-        fab.run(_("rm -f %(server_dir)ssites-enabled/%(domain)s.conf"))
+        fab.sudo(_("rm -f %(server_dir)ssites-enabled/%(domain)s.conf"))
 
     def remove_site(self, name):
         self.disable_site(name)
@@ -53,10 +51,9 @@ class FrontEnd(Daemon):
         fab.sudo("rm -f %(server_dir)ssites-available/%(name)s" % locals() )
 
     @command
-    @run_as('root')
     def remove(self):
         self.disable()
-        fab.run(_("rm -f %(server_dir)ssites-available/%(domain)s.conf"))
+        fab.sudo(_("rm -f %(server_dir)ssites-available/%(domain)s.conf"))
 
     def install_development_libraries(self):
         if self.backend:
@@ -268,9 +265,9 @@ class WsgiBackend(Backend):
         self.enable_site(_("%(instance_name)s"))
 
         fab.put(self.local_dir + "/django.wsgi", "/tmp/")
-        fab.sudo("chmod 755 /tmp/django.wsgi")
-        fab.sudo(_("mkdir -p %(remote_dir)s/%(project_name)s/etc/apache"))
-        fab.sudo(_("cp /tmp/django.wsgi %(remote_dir)s/%(project_name)s/etc/apache/django.wsgi"))
+        fab.run("chmod 755 /tmp/django.wsgi")
+        fab.run(_("mkdir -p %(remote_dir)s/%(project_name)s/etc/apache"))
+        fab.run(_("cp /tmp/django.wsgi %(remote_dir)s/%(project_name)s/etc/apache/django.wsgi"))
         fab.sudo(_("chown %(user)s:www-data -R %(remote_dir)s/%(project_name)s"))
         fab.sudo(_("chmod u=rwx,g=rx,o= -R %(remote_dir)s/%(project_name)s"))
 
@@ -356,7 +353,6 @@ class Apache2Server(ApacheServer):
         kwargs.setdefault('name', 'apache2')
         super(ApacheServer, self).__init__(**kwargs)
 
-    @run_as('root')
     def configure(self):
         upload_template(_('apache/%(domain)s.conf'),
                         fab.env.os.path.join(self.sites_dir,
@@ -365,18 +361,15 @@ class Apache2Server(ApacheServer):
                         use_sudo=True,
                         use_jinja=True)
 
-    @run_as('root')
     def restart(self):
         fab.sudo("apache2ctl -k graceful")
 
     def status(self):
         fab.sudo("apache2ctl status")
 
-    @run_as('root')
     def enable_site(self, name):
         fab.sudo("a2ensite %s" % name)
 
-    @run_as('root')
     def disable_site(self, name):
         fab.sudo("a2dissite %s" % name)
 
@@ -449,7 +442,6 @@ class Nginx(FrontEnd):
                         "%s/media/%s" % (remote_dir, filename))
                 files.append(filename)
 
-    @run_as('root')
     def configure(self, template=None):
 
         if template is None:
@@ -468,7 +460,7 @@ class Nginx(FrontEnd):
 
         os = fab.env.os
         log_dir = os.path.join(self.log_dir, _('%(user)s'))
-        os.mkdir(log_dir)
+        os.mkdir(log_dir, sudo=True)
         os.change_owner(log_dir, self.log_user, 'adm')
 
         self.disable_site('%(domain)s.conf' % self.env)

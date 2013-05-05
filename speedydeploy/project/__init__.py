@@ -48,6 +48,7 @@ class LogRotate(object):
                         self.config_dir + 'speedydeploy-' + remote_name,
                         fab.env,
                         use_jinja=True,
+                        use_sudo=True,
                         backup=False)
 
 
