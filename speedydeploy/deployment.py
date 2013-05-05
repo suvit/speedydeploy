@@ -88,7 +88,6 @@ class Deployment(TaskSet):
 
         self.ssh_add_key(pub_key_file)
 
-    @run_as('root')
     def os_add_user(self):
         fab.env.os.add_user(fab.env.user)
 
@@ -97,7 +96,6 @@ class Deployment(TaskSet):
         output = fab.run('cat ~/.ssh/id_rsa.pub')
         fab.local('echo %s > deploy_key' % output)
 
-    @run_as('root')
     def add_user(self):
         self.os_add_user()
         self.update_rsa_key()
@@ -132,14 +130,13 @@ class Deployment(TaskSet):
             if key:
                 self.ssh_add_key(key)
 
+            fab.run(_('echo root > %(remote_dir)s/.forward'))
+
         if 'db' in fab.env:
             self.db_create_user(fab.env.user, fab.env.db_pass)
             self.db_create_db(fab.env.user, fab.env.user, fab.env.db_pass)
 
         self.create_virtual_env()
-
-        # need setting for this
-        fab.run(_('echo root > %(remote_dir)s/.forward'))
 
     def update(self):
         project = fab.env.project
