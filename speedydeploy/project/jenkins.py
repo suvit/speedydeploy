@@ -48,6 +48,10 @@ class Jenkins(ObjectWithCommands):
         if self.local_exist('requirements/future.txt'):
             fab.local('env/bin/pip install -U -r requirements/future.txt')
 
+    def set_update_time(self):
+        fab.local('echo %s > %s' % (time.time(),
+                                    self.update_status_file))
+
     def need_update(self):
         try:
             with fab.settings(warn_only=True):
@@ -58,11 +62,7 @@ class Jenkins(ObjectWithCommands):
 
         last_update = datetime.fromtimestamp(update_ts)
 
-        now = datetime.now()
-
-        if (now - last_update) > fab.env['expire_timedelta']:
-            fab.local('echo %s > %s' % (time.time(),
-                                          self.update_status_file))
+        if (datetime.now() - last_update) > fab.env['expire_timedelta']:
             print colors.red('update requirements needed')
             return True
         else:
@@ -79,6 +79,7 @@ class Jenkins(ObjectWithCommands):
         if self.need_update():
             self.install_test_reqs()
             self.install_project_reqs(future=future)
+            self.set_update_time()
 
         fab.local('env/bin/python manage.py jenkins'
                   ' --settings=%s' % self.settings)
