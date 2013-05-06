@@ -170,3 +170,8 @@ class Deployment(TaskSet):
         if project.use_server:
             self.server_configure()
             self.server_reload()
+
+    def full_update(self):
+        self.deploy()
+        self.update_reqs()
+        self.update()
