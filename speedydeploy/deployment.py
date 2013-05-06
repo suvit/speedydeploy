@@ -117,6 +117,22 @@ class Deployment(TaskSet):
         self.deploy()
         self.update_virtual_env()
 
+    @run_as('root')
+    def sudo_configure(self):
+         
+        upload_template('sudoers/speedydeploy',
+                        '/etc/sudoers.d/speedydeploy',
+                        fab.env,
+                        use_sudo=True,
+                        use_jinja=True)
+ 
+        fab.env.os.change_mode('/etc/sudoers.d/speedydeploy', '0440')
+
+    @run_as('root')
+    def speedydeploy_configure(self):
+        fab.sudo('groupadd -f speedydeploy')
+        fab.sudo('usermod -a -G speedydeploy %s' % fab.env.user)
+
     def create(self, key=None):
 
         if 'provider' in fab.env and fab.env.provider.can_adduser:

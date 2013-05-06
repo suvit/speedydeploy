@@ -39,6 +39,3 @@ class NewRelicApp(ObjectWithCommand):
     @command
     def configure(self):
         fab.run('newrelic-admin')
-
-        
- 
