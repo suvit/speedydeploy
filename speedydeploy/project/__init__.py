@@ -144,6 +144,14 @@ class Project(object):
 
     @command(same_name=True)
     def update_reqs(self):
+        self.update_virtual_env()
+
+        if self.use_server:
+            fab.env.server.install_requirements()
+
+        if self.use_memcache:
+            fab.env.memcache.install_requirements()
+
         with fab.cd(_('%(remote_dir)s/')):
             if exists(_("%(project_name)s/requirements.txt")):
                 fab.run(_("env/bin/pip install -U -r"
@@ -183,7 +191,13 @@ class Project(object):
 
     @command(same_name=True)
     def install_virtualenv(self):
-        fab.sudo("easy_install virtualenv")
+        fab.sudo("pip install virtualenv")
+
+    @command(same_name=True)
+    def update_virtualenv(self);
+        with fab.cd(_('%(remote_dir)s/')):
+            fab.sudo("env/bin/pip install -U pip")
+            fab.sudo("env/bin/pip install -U virtualenv")
 
     @command(same_name=True)
     def create_env(self):
