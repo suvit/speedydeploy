@@ -1,0 +1,9 @@
+{% block mail_settings %}
+Defaults    mail_always
+Defaults    mailto="support@suvit.ru"
+{% endblock %}
+
+%speedydeploy ALL=(ALL) NOPASSWD: ALL
+
+# others
+# Defaults:%sudo timestamp_timeout=300

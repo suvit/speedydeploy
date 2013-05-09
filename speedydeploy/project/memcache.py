@@ -15,6 +15,8 @@ from ..deployment import command
 from ..utils import upload_template, upload_first
 
 
+# TODO rename to Memcached
+# and add project depends Memcache
 class Memcache(Daemon):
 
     pid_file = '/var/run/memcached.pid'
@@ -42,8 +44,8 @@ class Memcache(Daemon):
         #                use_sudo=True,
         #                use_jinja=True)
 
-        fab.run('touch %s' % self.pid_file)
-        fab.run('chown nobody %s' % self.pid_file)
+        fab.sudo('touch %s' % self.pid_file)
+        fab.sudo('chown nobody %s' % self.pid_file)
 
     def install(self):
 
