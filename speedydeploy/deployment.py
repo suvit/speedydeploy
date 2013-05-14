@@ -119,14 +119,13 @@ class Deployment(TaskSet):
 
     @run_as('root')
     def sudo_configure(self):
-         
         upload_template('sudoers/speedydeploy',
                         '/etc/sudoers.d/speedydeploy',
                         fab.env,
                         use_sudo=True,
-                        use_jinja=True)
- 
-        fab.env.os.change_mode('/etc/sudoers.d/speedydeploy', '0440')
+                        use_jinja=True,
+                        mode=0440,
+                        backup=False)
 
     @run_as('root')
     def speedydeploy_configure(self):
