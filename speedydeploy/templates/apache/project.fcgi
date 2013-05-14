@@ -14,4 +14,6 @@ runfastcgi(['method=prefork',
             'daemonize=false',
             "minspare=1",
             "maxspare={{worker_count}}",
-            "maxchildren=0"])
+            "maxchildren=0",
+            "maxrequests={{ backend_max_requests|default('10000') }}",
+           ])

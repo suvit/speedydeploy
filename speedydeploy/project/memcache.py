@@ -92,4 +92,4 @@ class PyLibMC(Memcache):
     def install_requirements(self):
         with fab.cd(_('%(remote_dir)s/')):
             fab.run('env/bin/pip install -U pylibmc')
-            fab.run('env/bin/pip install django-pylibmc')
+            fab.run('env/bin/pip install -U django-pylibmc')
