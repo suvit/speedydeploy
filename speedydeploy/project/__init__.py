@@ -144,7 +144,7 @@ class Project(object):
 
     @command(same_name=True)
     def update_reqs(self):
-        self.update_virtual_env()
+        self.update_virtualenv()
 
         if self.use_server:
             fab.env.server.install_requirements()
@@ -194,7 +194,7 @@ class Project(object):
         fab.sudo("pip install virtualenv")
 
     @command(same_name=True)
-    def update_virtualenv(self);
+    def update_virtualenv(self):
         with fab.cd(_('%(remote_dir)s/')):
             fab.sudo("env/bin/pip install -U pip")
             fab.sudo("env/bin/pip install -U virtualenv")
