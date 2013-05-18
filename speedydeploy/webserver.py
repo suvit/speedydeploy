@@ -418,8 +418,8 @@ class Nginx(FrontEnd):
         os = fab.env.os
         if isinstance(os, Ubuntu):
             os.install_package('python-software-properties')
-            fab.run('add-apt-repository ppa:nginx/stable')
-            fab.run('apt-get update')
+            fab.sudo('add-apt-repository ppa:nginx/stable')
+            fab.sudo('apt-get update')
         os.install_package('nginx')
 
     def update_static_files(self):

@@ -95,7 +95,7 @@ class Project(object):
     @command
     def install(self):
         dirs = ['', 'backup', 'data', 'etc',
-                'log', 'media', 'run',
+                'media', 'run',
                 'tmp', 'utils']
 
         if self.use_celery:
@@ -120,12 +120,9 @@ class Project(object):
         self.update_log()
 
     def update_log(self):
-        # TODO move log dir to /var/log/
-        os = fab.env.os
-
-        os.change_owner(os.path.join(_('%(remote_dir)s'), 'log'),
-                        _('%(user)s'),
-                        'adm')
+        fab.sudo(_('ln -s /var/log/speedydeploy/%(user)s/'
+                   ' %(remote_dir)slog'
+                  ))
 
     @command(same_name=True, aliases=('update_virtual_env',))
     def install_requirements(self):

@@ -131,6 +131,12 @@ class Deployment(TaskSet):
     def speedydeploy_configure(self):
         fab.sudo('groupadd -f speedydeploy')
         fab.sudo('usermod -a -G speedydeploy %s' % fab.env.user)
+        fab.env.os.mkdir(_('/var/log/speedydeploy/%(user)s/'), sudo=True)
+        fab.env.os.change_owner('/var/log/speedydeploy', 'root', 'adm')
+        fab.env.os.change_owner(_('/var/log/speedydeploy/%(user)s/'),
+                                fab.env.user,
+                                'adm')
+        fab.env.os.change_mode('/var/log/speedydeploy', '0775')
 
     def create(self, key=None):
 
@@ -139,8 +145,7 @@ class Deployment(TaskSet):
                 self.update_rsa_key(key) # for root
 
             self.os_add_user()
-            #self.os_add_group('speedydeploy')
-            #self.os_add_user_to_group(fab.env.user, 'speedydeploy')
+            self.speedydeploy_configure()
 
             if key:
                 self.ssh_add_key(key)
