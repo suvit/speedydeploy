@@ -149,10 +149,10 @@ class Project(object):
         if self.use_memcache:
             fab.env.memcache.install_requirements()
 
-        with fab.cd(_('%(remote_dir)s/')):
-            if exists(_("%(project_name)s/requirements.txt")):
-                fab.run(_("env/bin/pip install -U -r"
-                          " %(project_name)s/requirements.txt"))
+        with fab.cd(_('%(remote_dir)s/%(project_name)s/')):
+            if exists(_("requirements.txt")):
+                fab.run(_("../env/bin/pip install -U -r"
+                          " requirements.txt"))
 
     @command(same_name=True)
     def install_development_libraries(self):
