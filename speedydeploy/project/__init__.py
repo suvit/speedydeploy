@@ -193,8 +193,8 @@ class Project(object):
     @command(same_name=True)
     def update_virtualenv(self):
         with fab.cd(_('%(remote_dir)s/')):
-            fab.sudo("env/bin/pip install -U pip")
-            fab.sudo("env/bin/pip install -U virtualenv")
+            fab.run("env/bin/pip install -U pip")
+            fab.run("env/bin/pip install -U virtualenv")
 
     @command(same_name=True)
     def create_env(self):
