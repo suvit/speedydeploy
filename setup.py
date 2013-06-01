@@ -13,7 +13,6 @@ from speedydeploy import get_version
 setup(
     name='speedydeploy',
     version=get_version(),
-
     description='Speed deploy',
     long_description=file(
         os.path.join(
@@ -25,7 +24,6 @@ setup(
     author_email='vsafronovich@gmail.com',
     license='MIT',
     url='http://github.com/suvit/speedydeploy',
-
     classifiers=[
         'Development Status :: 4 - Beta',
         'Environment :: Other Environment',
@@ -34,6 +32,8 @@ setup(
         'Operating System :: MacOS :: MacOS X',
         'Operating System :: POSIX',
         'Programming Language :: Python',
+        'Programming Language :: Python :: 2.6',
+        'Programming Language :: Python :: 2.7',
         'Topic :: Internet',
         'Topic :: Utilities',
         'Topic :: Software Development :: Libraries :: Python Modules',
