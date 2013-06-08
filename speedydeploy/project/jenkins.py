@@ -82,7 +82,7 @@ class Jenkins(ObjectWithCommands):
             self.set_update_time()
 
         fab.local('env/bin/python manage.py jenkins'
-                  ' --settings=%s' % self.settings)
+                  ' --settings=%s -v2' % self.settings)
 
 class JenkinsServer(Daemon):
 
