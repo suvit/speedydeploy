@@ -123,6 +123,8 @@ class Debian(Linux):
 
 
 class RedHat(Linux):
+    daemon_restarter = 'service'
+
     def install_package(self, package):
         return fab.sudo('yum install -q -y %s' % package)
 
