@@ -9,7 +9,7 @@ from fabric.contrib.files import exists
 
 from fab_deploy.utils import run_as
 
-from ..base import _, Daemon, Ubuntu
+from ..base import _, Daemon, Debian, RedHat
 from ..deployment import command
 from ..utils import upload_template, upload_first
 
@@ -26,7 +26,7 @@ class SphinxSearch(Daemon):
 
     def __init__(self, daemon_name=None):
         if daemon_name is None:
-            daemon_name = _('%(instance_name)s_searchd')
+            daemon_name = _('%(project_name)s_searchd')
         super(SphinxSearch, self).__init__(daemon_name)
 
     def dirs(self):
@@ -37,7 +37,7 @@ class SphinxSearch(Daemon):
     @command
     def configure_daemon(self):
         upload_template('sphinxsearch/searchd',
-                        _("/etc/init.d/%(instance_name)s_searchd"),
+                        _("/etc/init.d/%(project_name)s_searchd"),
                         context=fab.env,
                         use_sudo=True,
                         use_jinja=True,
@@ -89,7 +89,7 @@ class SphinxSearch(Daemon):
         self.install_package()
 
         self.put_config()
-        
+
         if reindex:
             self.reindex()
 
@@ -142,7 +142,8 @@ class SphinxSearch202(SphinxSearch201):
 
     version = 'sphinx-2.0.2-beta'
 
-    use_deb = property(lambda: isinstance(fab.env.os, Ubuntu))
+    use_deb = property(lambda: isinstance(fab.env.os, Debian))
+    is_rhel = property(lambda: isinstance(fab.env.os, RedHat))
 
     def install_package(self):
         if self.use_deb:
@@ -154,10 +155,15 @@ class SphinxSearch202(SphinxSearch201):
                 fab.sudo('dpkg -I %s' % filename)
             finally:
                 fab.run('rm -R %s' % filename)
+        elif self.is_rhel:
+            fab.env.os.install_package('sphinx')
         else:
             super(self, SphinxSearch201).install_package()
 
 
 class SphinxSearch203(SphinxSearch202):
-
     version = 'sphinx-2.0.3-release'
+
+
+class SphinxSearch207(SphinxSearch202):
+    version = 'sphinx-2.0.7-release'

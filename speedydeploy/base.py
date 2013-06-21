@@ -112,6 +112,7 @@ class Linux(Unix):
 
 
 class Debian(Linux):
+    package_installer = 'apt-get'
 
     def install_package(self, package):
         return fab.sudo('apt-get install -q -y %s' % package)
@@ -124,6 +125,7 @@ class Debian(Linux):
 
 class RedHat(Linux):
     daemon_restarter = 'service'
+    package_installer = 'yum'
 
     def install_package(self, package):
         return fab.sudo('yum install -q -y %s' % package)
