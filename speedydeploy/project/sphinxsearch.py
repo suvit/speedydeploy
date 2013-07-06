@@ -16,6 +16,8 @@ from ..utils import upload_template, upload_first
 
 class SphinxSearch(Daemon):
 
+    use_sudo = False
+
     version = 'sphinx-0.9.9'
     api_version = 0x116
     # TODO attributes server host and port

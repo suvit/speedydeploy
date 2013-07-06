@@ -70,7 +70,7 @@ class Jenkins(ObjectWithCommands):
             return False
 
     @command
-    def test_project(self, future=False):
+    def test_project(self, future=False, verbose=False):
         if not self.local_exist('env', directory=True):
             fab.local('virtualenv env --system-site-packages')
 
@@ -81,8 +81,11 @@ class Jenkins(ObjectWithCommands):
             self.install_project_reqs(future=future)
             self.set_update_time()
 
-        fab.local('env/bin/python manage.py jenkins'
-                  ' --settings=%s -v2' % self.settings)
+        run_command = ('env/bin/python manage.py jenkins'
+                       ' --settings=%s' % self.settings)
+        if verbose:
+            run_command += ' -v2'
+        fab.local(run_command)
 
 class JenkinsServer(Daemon):
 

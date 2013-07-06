@@ -149,7 +149,7 @@ class Project(object):
         if self.use_memcache:
             fab.env.memcache.install_requirements()
 
-        with fab.cd(_('%(remote_dir)s/%(project_name)s/')):
+        with fab.cd(_('%(remote_dir)s/%(vcs_repo_name)s/')):
             if exists(_("requirements.txt")):
                 fab.run(_("../env/bin/pip install -U -r"
                           " requirements.txt"))

@@ -228,6 +228,8 @@ class Daemon(object):
     namespace = None
     __metaclass__ = CommandNamespace
 
+    use_sudo = True
+
     def __init__(self, daemon_name, os=None):
         if os is None:
             os = fab.env.os
@@ -236,10 +238,18 @@ class Daemon(object):
         self.os = os
 
     def start(self, pty=True):
-        fab.sudo("%s %s start" % (self.os.daemon_restarter, self.name), pty=pty)
+        if self.use_sudo:
+            run = fab.sudo
+        else:
+            run = fab.run
+        run("%s %s start" % (self.os.daemon_restarter, self.name), pty=pty)
 
     def stop(self, pty=True):
-        fab.sudo("%s %s stop" % (self.os.daemon_restarter, self.name), pty=pty)
+        if self.use_sudo:
+            run = fab.sudo
+        else:
+            run = fab.run
+        run("%s %s stop" % (self.os.daemon_restarter, self.name), pty=pty)
 
     def restart(self, pty=True):
         with fab.settings(warn_only=True):
