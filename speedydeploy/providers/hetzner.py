@@ -33,6 +33,14 @@ class EX4S(EX4):
     pass
 
 
+class EX40(EX4):
+    pass
+
+
+class EX40SSD(EX4):
+    pass
+
+
 class EX5(Hetzner):
     pass
 

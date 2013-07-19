@@ -103,7 +103,7 @@ class Backend(object): #TODO inherit Server
         if domain is not None:
             fab.env['domain'] = domain
 
-        if fab.env.project.use_django:
+        if 'project' in fab.env and fab.env.project.use_django:
             project_path = _('%(django_python_path)s')
         else:
             project_path = _('%(remote_dir)s/%(project_name)s')
