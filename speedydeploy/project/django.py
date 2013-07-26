@@ -52,10 +52,14 @@ class DjangoProject(object):
     def get_version(self):
         return '.'.join(str(part) for part in self.version)
 
-    def install_requirements(self):
-        with fab.cd(_('%(remote_dir)s')):
-            fab.run(_("env/bin/pip install -r"
-                      " %(django_project_path)s/requirements.txt"))
+    def install_requirements(self, update=True):
+        opts = '-r'
+        if update:
+            opts = '-U %s' % opts
+
+        with fab.cd(_('%(django_python_path)s')):
+            fab.run(_("../env/bin/pip install %s"
+                      " requirements.txt" % opts))
 
     def run(self, command):
         with fab.cd(_('%(django_python_path)s')):

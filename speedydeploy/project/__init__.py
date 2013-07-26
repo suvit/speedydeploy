@@ -126,21 +126,10 @@ class Project(object):
 
     @command(same_name=True, aliases=('update_virtual_env',))
     def install_requirements(self):
-        if self.use_server:
-            fab.env.server.install_requirements()
-
-        if self.use_memcache:
-            fab.env.memcache.install_requirements()
-
-        with fab.cd(_('%(remote_dir)s')):
-            if exists(_("%(project_name)s/requirements.txt")):
-                fab.run(_("env/bin/pip install -r %(project_name)s/requirements.txt"))
-
-        if self.use_django:
-            self.django.install_requirements()
+        self.update_reqs(update=False)
 
     @command(same_name=True)
-    def update_reqs(self):
+    def update_reqs(self, update=True):
         self.update_virtualenv()
 
         if self.use_server:
@@ -149,10 +138,8 @@ class Project(object):
         if self.use_memcache:
             fab.env.memcache.install_requirements()
 
-        with fab.cd(_('%(remote_dir)s/%(vcs_repo_name)s/')):
-            if exists(_("requirements.txt")):
-                fab.run(_("../env/bin/pip install -U -r"
-                          " requirements.txt"))
+        if self.use_django:
+            self.django.install_requirements(update=update)
 
     @command(same_name=True)
     def install_development_libraries(self):
@@ -193,8 +180,8 @@ class Project(object):
     @command(same_name=True)
     def update_virtualenv(self):
         with fab.cd(_('%(remote_dir)s/')):
-            fab.run("env/bin/pip install -U pip")
-            fab.run("env/bin/pip install -U virtualenv")
+            fab.run('env/bin/pip install -U "pip<1.4"')
+            fab.run('env/bin/pip install -U virtualenv')
 
     @command(same_name=True)
     def create_env(self):
