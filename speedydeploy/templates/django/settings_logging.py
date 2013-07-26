@@ -2,6 +2,7 @@ import os
 
 LOG_DIRNAME = locals().get('LOG_DIRNAME', '{{remote_dir}}log/')
 LOG_FILENAME = locals().get('LOG_FILENAME', 'main.log')
+LOG_ERROR_FILENAME = locals().get('LOG_ERROR_FILENAME', 'main.error.log')
 
 LOGGING = {
     'version': 1,
@@ -39,10 +40,16 @@ LOGGING = {
             'filename': os.path.join(LOG_DIRNAME, 'watch.log'),
             'formatter': 'advanced',
         },
+        'error':{
+            'level': 'ERROR',
+            'class': 'logging.FileHandler',
+            'filename': os.path.join(LOG_DIRNAME, LOG_FILENAME),
+            'formatter': 'advanced',
+        },
     },
     'loggers': {
         '': {
-            'handlers': ['default'],
+            'handlers': ['default', 'error'],
             'level': 'INFO',
             'propagate': True
         },
