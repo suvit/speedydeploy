@@ -23,7 +23,7 @@
 
 PID_FILE='/home/{{user}}/run/searchd.pid'
 CONFIG_FILE=/home/{{user}}/etc/sphinxsearch/sphinx.conf
-EXEC_PATH={% if os.package_installer == 'yum' %}/usr/bin/{% else %}/usr/local/bin{% endif %}
+EXEC_PATH={% if '2.0' in sphinxsearch.version %}/usr/bin/{% else %}/usr/local/bin{% endif %}
 RETVAL=0
 prog="searchd"
 
