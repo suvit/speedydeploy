@@ -43,7 +43,7 @@ LOGGING = {
         'error':{
             'level': 'ERROR',
             'class': 'logging.FileHandler',
-            'filename': os.path.join(LOG_DIRNAME, LOG_FILENAME),
+            'filename': os.path.join(LOG_DIRNAME, LOG_ERROR_FILENAME),
             'formatter': 'advanced',
         },
     },
