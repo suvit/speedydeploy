@@ -7,6 +7,11 @@ LOG_ERROR_FILENAME = locals().get('LOG_ERROR_FILENAME', 'main.error.log')
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': True,
+    'filters': {
+        'require_debug_false': {
+            '()': 'django.utils.log.RequireDebugFalse'
+        }
+    },
     'formatters': {
         'simple': {
             'format': '%(levelname)s - %(message)s'
@@ -46,6 +51,11 @@ LOGGING = {
             'filename': os.path.join(LOG_DIRNAME, LOG_ERROR_FILENAME),
             'formatter': 'advanced',
         },
+        'mail_admins': {
+            'level': 'ERROR',
+            'filters': ['require_debug_false'],
+            'class': 'django.utils.log.AdminEmailHandler'
+        }
     },
     'loggers': {
         '': {
@@ -61,6 +71,11 @@ LOGGING = {
         'root': {
             'handlers':['console'],
             'level':'INFO',
+            'propagate': True,
+        },
+        'django.request': {
+            'handlers': ['mail_admins'],
+            'level': 'ERROR',
             'propagate': True,
         },
     },

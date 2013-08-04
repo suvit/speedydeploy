@@ -48,7 +48,6 @@ class DjangoProject(object):
         fab.env['django_python_path'] = project_path
         fab.env['django_settings'] = 'settings'
 
-
     def get_version(self):
         return '.'.join(str(part) for part in self.version)
 
