@@ -144,8 +144,8 @@ class SphinxSearch202(SphinxSearch201):
 
     version = 'sphinx-2.0.2-beta'
 
-    use_deb = property(lambda: isinstance(fab.env.os, Debian))
-    is_rhel = property(lambda: isinstance(fab.env.os, RedHat))
+    use_deb = property(lambda obj: isinstance(fab.env.os, Debian))
+    is_rhel = property(lambda obj: isinstance(fab.env.os, RedHat))
 
     def install_package(self):
         if self.use_deb:
