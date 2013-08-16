@@ -180,7 +180,7 @@ class Project(object):
     @command(same_name=True)
     def update_virtualenv(self):
         with fab.cd(_('%(remote_dir)s/')):
-            fab.run('env/bin/pip install -U "pip<1.4"')
+            fab.run('env/bin/pip install -U "pip<1.5,!=1.4"')
             fab.run('env/bin/pip install -U virtualenv')
 
     @command(same_name=True)
