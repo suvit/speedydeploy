@@ -62,6 +62,13 @@ class SphinxSearch(Daemon):
                         mode=0755,
                         )
 
+        upload_template("sphinxsearch/index_delta.sh",
+                        _("%(remote_dir)s/etc/sphinxsearch/index_delta.sh"),
+                        fab.env,
+                        use_jinja=True,
+                        mode=0755,
+                        )
+
     def install_package(self):
         #fab.env.os.install_package('sphinxsearch')
         fab.run('wget http://sphinxsearch.com/files/%s.tar.gz' % self.version)
