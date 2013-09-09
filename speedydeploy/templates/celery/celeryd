@@ -82,12 +82,12 @@
 
 set -e
 
-DEFAULT_CELERYD="/home/{{user}}/env/celeryd"
+DEFAULT_CELERYD="/home/{{user}}/env/bin/celeryd"
 
 # /etc/init.d/ssh: start and stop the celery task worker daemon.
 
-if test -f /home/{{user}}/{{project_name}}/etc/celery/celeryd.conf; then
-    . /home/{{user}}/{{project_name}}/etc/celery/celeryd.conf
+if test -f /home/{{user}}/etc/celery/celeryd.conf; then
+    . /home/{{user}}/etc/celery/celeryd.conf
 fi
 
 CELERYD_LOG_FILE=${CELERYD_LOG_FILE:-${CELERYD_LOGFILE:-"/var/log/{{user}}_celeryd.log"}}

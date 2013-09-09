@@ -51,7 +51,7 @@ class Celery(Daemon):
 
     def __init__(self, daemon_name=None):
         if daemon_name is None:
-            daemon_name = _('%(instance_name)s_celeryd')
+            daemon_name = _('%(project_name)s_celeryd')
         super(Celery, self).__init__(daemon_name)
 
     def dirs(self):
@@ -60,7 +60,7 @@ class Celery(Daemon):
     @command
     def configure_daemon(self):
         upload_template('celery/celeryd',
-                        _("/etc/init.d/%(instance_name)s_celeryd"),
+                        _("/etc/init.d/%(project_name)s_celeryd"),
                         context=fab.env,
                         use_jinja=True,
                         use_sudo=True,
@@ -119,7 +119,7 @@ class Celery(Daemon):
         os = fab.env.os
         if self.broker:
             self.broker.install_development_libraries(self)
-        os.install_package('rabbitmq-server')
+        #os.install_package('rabbitmq-server')
 
     @command
     def restart(self):
