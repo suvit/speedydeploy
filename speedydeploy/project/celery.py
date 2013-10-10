@@ -48,6 +48,7 @@ class Celery(Daemon):
     namespace = 'celery'
 
     supervisor = False
+    check_running = True
 
     def __init__(self, daemon_name=None):
         if daemon_name is None:
@@ -97,7 +98,7 @@ class Celery(Daemon):
         else:
             celery.update()
 
-        if not self.supervisor:
+        if not self.supervisor and self.check_running:
             upload_first(['celery/not_running.mail',
                          ],
                          _("%(remote_dir)s/utils/celery_not_running.mail"),
