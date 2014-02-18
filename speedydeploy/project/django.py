@@ -20,6 +20,7 @@ class DjangoProject(object):
     version = (1, 3)
 
     HAS_WSGI = property(lambda self: self.version >= (1, 4))
+    HAS_REQUIREDEBUGFALSE = property(lambda self: self.version >= (1, 4))
 
     USE_LOGGING = True
     USE_SENTRY = True
@@ -138,6 +139,22 @@ class DjangoProject(object):
     def deploy_static(self):
         self.run('collectstatic -v0 --noinput')
 
+
+class Django13(DjangoProject):
+    pass
+
+
+class Django13ChangeProjectDir(Django13):
+
+    def __init__(self, *args, **kwargs):
+        super(Django13ChangeProjectDir, self).__init__(*args, **kwargs)
+
+        path = fab.env['os'].path
+        python_path = path.split(self.project_path.rstrip('/'))[0]
+        fab.env['django_python_path'] = python_path
+        fab.env['django_settings'] = '%s.settings' % fab.env['django_project_name']
+
+
 class Django14(DjangoProject):
     version = (1, 4)
 
@@ -148,3 +165,4 @@ class Django14(DjangoProject):
         python_path = path.split(self.project_path.rstrip('/'))[0]
         fab.env['django_python_path'] = python_path
         fab.env['django_settings'] = '%s.settings' % fab.env['django_project_name']
+
