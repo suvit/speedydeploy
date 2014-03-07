@@ -166,3 +166,10 @@ class Django14(DjangoProject):
         fab.env['django_python_path'] = python_path
         fab.env['django_settings'] = '%s.settings' % fab.env['django_project_name']
 
+
+class Django15(Django14):
+    version = (1, 5)
+
+
+class Django16(Django15):
+    version = (1, 6)
