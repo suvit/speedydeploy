@@ -171,10 +171,7 @@ class Project(object):
 
     @command(same_name=True)
     def install_setuptools(self):
-        os = fab.env.os.install_package("python-setuptools build-essential")
-
-        fab.sudo("easy_install distribute")
-        fab.sudo("easy_install pip")
+        fab.env.os.install_package("python-pip")
 
     @command(same_name=True)
     def install_virtualenv(self):
