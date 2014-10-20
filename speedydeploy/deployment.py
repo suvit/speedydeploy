@@ -93,6 +93,9 @@ class Deployment(TaskSet):
 
     def add_deploy_key(self):
         fab.run('ssh-keygen -q')
+        self.get_deploy_key()
+
+    def get_deploy_key(self):
         output = fab.run('cat ~/.ssh/id_rsa.pub')
         fab.local('echo %s > deploy_key' % output)
 
@@ -105,7 +108,7 @@ class Deployment(TaskSet):
         fab.env.project.backup()
 
     def update_env(self):
-        fab.env.project.install()
+        #fab.env.project.install()
         if 'provider' in fab.env and fab.env.provider.can_addpackages:
             fab.env.project.install_development_libraries()
             fab.env.project.install_setuptools()

@@ -121,7 +121,7 @@ class FcgiBackend(Backend):
 
     def install_requirements(self):
         with fab.cd(_('%(remote_dir)s/')):
-            fab.run('env/bin/pip install "flup==1.0.2"')
+            fab.run(_('%(virtualenv)s/bin/pip install "flup==1.0.2"'))
 
     def stop(self):
         with fab.settings(warn_only=True):
@@ -130,7 +130,7 @@ class FcgiBackend(Backend):
     def start(self):
         with fab.cd(_('%(remote_dir)s/%(project_name)s')):
             # TODO use' socket=%(remote_dir)s/run/fcgi.sock'
-            fab.run(_('../env/bin/python manage.py runfcgi'
+            fab.run(_('../%(virtualenv)s/bin/python manage.py runfcgi'
                       ' host=127.0.0.1 port=8080',
                       ' daemonize=true'
                       ' minspare=1'
@@ -196,8 +196,8 @@ class Gunicorn(Backend):
 
     def install_requirements(self):
         with fab.cd(_('%(remote_dir)s/')):
-            fab.run('env/bin/pip install -U gunicorn')
-            fab.run('env/bin/pip install -U setproctitle')
+            fab.run(_('%(virtualenv)s/bin/pip install -U gunicorn'))
+            fab.run(_('%(virtualenv)s/bin/pip install -U setproctitle'))
 
     def stop(self):
         with fab.settings(warn_only=True):
@@ -221,7 +221,7 @@ class Gunicorn(Backend):
         self.start_command()
 
         with fab.cd(_('%(project_path)s')):
-            fab.run(_('%(remote_dir)s/env/bin/%(gunicorn_starter)s'
+            fab.run(_('%(remote_dir)s/%(virtualenv)s/bin/%(gunicorn_starter)s'
                       ' -c %(remote_dir)s/etc/gunicorn/conf.py'))
 
     @command
@@ -284,8 +284,8 @@ class UwsgiBackend(Backend):
 
     def install_requirements(self):
         with fab.cd(_('%(remote_dir)s/')):
-            fab.run('env/bin/pip install -U uwsgi')
-            fab.run('env/bin/pip install -U uwsgitop')
+            fab.run(_('%(virtualenv)s/bin/pip install -U uwsgi'))
+            fab.run(_('%(virtualenv)s/bin/pip install -U uwsgitop'))
 
     @command
     def stop(self):
@@ -296,7 +296,7 @@ class UwsgiBackend(Backend):
         if self.supervisor:
             return
 
-        fab.run(_('%(remote_dir)s/env/bin/uwsgi'
+        fab.run(_('%(remote_dir)s/%(virtualenv)s/bin/uwsgi'
                   ' --ini %(remote_dir)s/etc/uwsgi/conf.ini'))
 
     def reload(self):

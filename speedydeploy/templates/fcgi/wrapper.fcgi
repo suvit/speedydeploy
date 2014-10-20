@@ -1,4 +1,4 @@
-#!{{ remote_dir }}/env/bin/python
+#!{{ remote_dir }}/{{virtualenv}}/bin/python
 # -*- coding: utf-8 -*-
 import os, sys
 from os.path import expanduser

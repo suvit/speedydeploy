@@ -48,6 +48,7 @@ class DjangoProject(object):
         fab.env['django_project_name'] = path.basename(self.project_path.rstrip('/'))
         fab.env['django_python_path'] = project_path
         fab.env['django_settings'] = 'settings'
+        fab.env['reqs_file'] = 'requirements.txt'
 
     def get_version(self):
         return '.'.join(str(part) for part in self.version)
@@ -58,14 +59,17 @@ class DjangoProject(object):
             opts = '-U %s' % opts
 
         with fab.cd(_('%(django_python_path)s')):
-            fab.run(_("../env/bin/pip install %s"
-                      " requirements.txt" % opts))
+            fab.run(_("../%%(virtualenv)s/bin/pip install %s"
+                      " %%(reqs_file)s" % opts))
 
-    def run(self, command):
+    def manage(self, command):
         with fab.cd(_('%(django_python_path)s')):
             fab.run('%s manage.py %s' % (self.python_path,
                                          command)
                    )
+    # legacy
+    run = manage
+
 
     def syncdb(self, app=''):
         self.run('syncdb --noinput %s' % app)
@@ -166,3 +170,14 @@ class Django14(DjangoProject):
         fab.env['django_python_path'] = python_path
         fab.env['django_settings'] = '%s.settings' % fab.env['django_project_name']
 
+
+class Django15(Django14):
+    version = (1, 5)
+
+
+class Django16(Django15):
+    version = (1, 6)
+
+
+class Django17(Django16):
+    version = (1, 7)

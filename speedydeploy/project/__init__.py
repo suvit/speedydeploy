@@ -92,6 +92,9 @@ class Project(object):
     use_pil = True # project depends
     use_pip = True
 
+    def __init__(self):
+        fab.env.virtualenv = 'env'
+
     @command
     def install(self):
         dirs = ['', 'backup', 'data', 'etc',
@@ -180,13 +183,13 @@ class Project(object):
     @command(same_name=True)
     def update_virtualenv(self):
         with fab.cd(_('%(remote_dir)s/')):
-            fab.run('env/bin/pip install -U "pip<1.5,!=1.4"')
-            fab.run('env/bin/pip install -U virtualenv')
+            fab.run(_('%(virtualenv)s/bin/pip install -U "pip<1.5,!=1.4"'))
+            fab.run(_('%(virtualenv)s/bin/pip install -U virtualenv'))
 
     @command(same_name=True)
     def create_env(self):
         with fab.cd(_('%(remote_dir)s')):
-            fab.run("virtualenv env")
+            fab.run(_("virtualenv %(virtualenv)s"))
 
     def backup(self):
         with fab.cd(_('%(remote_dir)s')):

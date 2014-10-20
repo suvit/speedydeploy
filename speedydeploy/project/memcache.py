@@ -65,7 +65,7 @@ class Memcache(Daemon):
 
     def install_requirements(self):
         with fab.cd(_('%(remote_dir)s/')):
-            fab.run('env/bin/pip install -U python-memcached')
+            fab.run('%(virtualenv)s/bin/pip install -U python-memcached')
 
     @command
     def configure(self, install=False):
