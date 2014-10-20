@@ -15,6 +15,9 @@ class Odoo(OpenErp):
 
     namespace = 'odoo'
 
+    def __init__(self):
+        fab.env.uwsgi_conf = 'uwsgi/odoo.ini'
+
     def install_development_libraries(self):
         #fab.env.os.install_package('python-dev')
         # common install_development_libraries
@@ -32,8 +35,5 @@ class Odoo(OpenErp):
     def install(self):
         #self.install_development_libraries()
         # install_virtualenv
-        #
 
         fab.run('~/env/bin/pip install --process-dependency-links -e git+https://github.com/odoo/odoo@8.0#egg=odoo_8')
-
-

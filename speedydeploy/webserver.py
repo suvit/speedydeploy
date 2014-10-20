@@ -279,6 +279,11 @@ class UwsgiBackend(Backend):
 
     supervisor = False
 
+    def __init__(self, domain=None):
+        super(UwsgiBackend, self).__init__(domain=domain)
+
+        fab.env.setdefault('uwsgi_conf', 'uwsgi/default.ini')
+
     def dirs(self):
         return ['etc/uwsgi']
 
@@ -306,12 +311,13 @@ class UwsgiBackend(Backend):
     @command
     def configure(self):
         if fab.env.project.use_django:
+            # XXX
             if fab.env.project.django.HAS_WSGI:
                 default_template = 'uwsgi/django.ini'
             else:
                 default_template = 'uwsgi/django_old.ini'
         else:
-            default_template = 'uwsgi/default.ini'
+            default_template = fab.env.uwsgi_conf
 
         upload_first([_('uwsgi/%(domain)s.conf'),
                       _('nginx/%(domain)s.uwsgi.conf'),
