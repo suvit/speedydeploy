@@ -9,14 +9,7 @@ from ..deployment import command
 class OpenErp(object):
     version = (0, 7)
 
-
-class Odoo(OpenErp):
-    version = (0, 8)
-
-    namespace = 'odoo'
-
-    def __init__(self):
-        fab.env.uwsgi_conf = 'uwsgi/odoo.ini'
+    namespace = 'openerp'
 
     def install_development_libraries(self):
         #fab.env.os.install_package('python-dev')
@@ -30,6 +23,22 @@ class Odoo(OpenErp):
 
         # ldap
         fab.env.os.install_package('libldap2-dev libsasl2-dev')
+
+    @command
+    def install(self):
+        #self.install_development_libraries()
+        # install_virtualenv
+
+        fab.run('~/env/bin/pip install --process-dependency-links -e git+https://github.com/odoo/odoo@7.0#egg=odoo_7')
+
+
+class Odoo(OpenErp):
+    version = (0, 8)
+
+    namespace = 'odoo'
+
+    def __init__(self):
+        fab.env.uwsgi_conf = 'uwsgi/odoo.ini'
 
     @command
     def install(self):
