@@ -197,9 +197,18 @@ class Maria51Database(MysqlDatabase):
     version = '5.1'
 
 
-class Maria52Database(MariaDatabase):
+class Maria52Database(Maria51Database):
     version = '5.2'
 
 
-class Maria53Database(MariaDatabase):
+class Maria53Database(Maria52Database):
     version = '5.3'
+
+class Maria54Database(Maria53Database):
+    version = '5.4'
+
+class Maria55Database(Maria54Database):
+    version = '5.5'
+
+class Maria100Database(Maria55Database):
+    version = '10.0'

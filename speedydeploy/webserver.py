@@ -181,7 +181,7 @@ class FcgiWrapper(FcgiBackend):
 
     def stop(self):
         with fab.settings(warn_only=True):
-            fab.run(_("killall wrapper.fcgi"))
+            fab.run(_("killall -r wrapper.fcgi"))
 
 
 class Gunicorn(Backend):

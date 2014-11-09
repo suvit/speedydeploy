@@ -120,7 +120,8 @@ class Project(object):
         for directory in dirs:
             os.mkdir(os.path.join(_('%(remote_dir)s'), directory))
 
-        self.update_log()
+        if fab.env.provider.can_sudo:
+            self.update_log()
 
     def update_log(self):
         fab.sudo(_('ln -s /var/log/speedydeploy/%(user)s/'
