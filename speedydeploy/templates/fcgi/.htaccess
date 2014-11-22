@@ -16,4 +16,4 @@ RewriteRule \.(jpg|jpeg|png|gif|ico)$ - [L]
 #RewriteRule (.*) http://{{domain}}/$1 [R=301,L]
 
 RewriteCond %{REQUEST_FILENAME} !-f
-RewriteRule ^(.*)$ {% if not apache_fcgi_full %}/cgi-bin{% endif %}/wrapper.fcgi/$1 [QSA,L]
+RewriteRule ^(.*)$ {% if not apache_fcgi_full %}/cgi-bin{% endif %}/wrapper.fcgi/$1 [E=HTTP_AUTHORIZATION:%{HTTP:Authorization},QSA,L]
