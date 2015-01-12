@@ -24,6 +24,9 @@ class OpenErp(object):
         # ldap
         fab.env.os.install_package('libldap2-dev libsasl2-dev')
 
+        # yaml
+        fab.env.os.install_package('libyaml-dev')
+
     @command
     def install(self):
         #self.install_development_libraries()
