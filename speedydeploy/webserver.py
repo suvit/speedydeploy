@@ -148,6 +148,7 @@ class FcgiBackend(Backend):
 class FcgiWrapper(FcgiBackend):
 
     fcgi_path = '%(remote_dir)s/http/'
+    use_project_media = False
 
     def dirs(self):
         return ['http']
@@ -173,15 +174,18 @@ class FcgiWrapper(FcgiBackend):
                      fab.env,
                      use_jinja=True)
 
-        #XXX
-        with fab.cd(_('%(remote_dir)s/http')):
-            with fab.settings(warn_only=True):
-                fab.run('ln -s ../media/static')
-                fab.run('ln -s ../media/media')
+        if self.use_project_media:
+            with fab.cd(_('%(remote_dir)s/http')):
+                with fab.settings(warn_only=True):
+                    fab.run('ln -s ../media/static')
+                    fab.run('ln -s ../media/media')
 
     def stop(self):
         with fab.settings(warn_only=True):
-            fab.run(_("killall -r wrapper.fcgi"))
+            fab.run(_("kill -HUP `cat %(remote_dir)s/run/fcgi.pid`"))
+
+    def reload(self):
+        self.stop()
 
 
 class Gunicorn(Backend):
