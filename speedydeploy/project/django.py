@@ -70,25 +70,20 @@ class DjangoProject(object):
     # legacy
     run = manage
 
-
     def syncdb(self, app=''):
-        self.run('syncdb --noinput %s' % app)
+        self.manage('syncdb --noinput %s' % app)
 
     def migrate(self, app=''):
-        self.run('migrate %s' % app)
+        self.manage('migrate %s' % app)
 
     def init_debug_server(self):
-        self.run('init_debug_server')
+        self.manage('init_debug_server')
 
     def runserver(self, host="0.0.0.0", port=8080):
-        self.run('runserver %s:%s' % (host,port))
-    
-    def createsuperuser(self):
-        self.run('createsuperuser')
+        self.manage('runserver %s:%s' % (host, port))
 
-    # remove this
-    def createshop(self):
-        self.run('create_shop')
+    def createsuperuser(self):
+        self.manage('createsuperuser')
 
     @command(same_name=True)
     def update_settings_local(self):
@@ -124,10 +119,12 @@ class DjangoProject(object):
 
     def reload(self):
         self.update_settings_local()
-        self.syncdb()
 
-        if self.USE_SOUTH:
+        if self.version >= (1, 7) or self.USE_SOUTH:
             self.migrate()
+        else:
+            self.syncdb()
+
         if self.USE_STATICFILES:
             self.deploy_static()
 
@@ -141,7 +138,7 @@ class DjangoProject(object):
 
     @command
     def deploy_static(self):
-        self.run('collectstatic -v0 --noinput')
+        self.manage('collectstatic -v0 --noinput')
 
 
 class Django13(DjangoProject):
@@ -181,3 +178,6 @@ class Django16(Django15):
 
 class Django17(Django16):
     version = (1, 7)
+
+    def migrate(self, app=''):
+        self.manage('migrate --no-color %s' % app)
