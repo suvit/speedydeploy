@@ -161,6 +161,7 @@ class Project(object):
             if isinstance(os, Debian):
                 os.install_package('libjpeg62 libjpeg62-dev')
                 os.install_package('libfreetype6 libfreetype6-dev')
+                os.install_package('libtiff4')
             elif isinstance(os, RedHat):
                 os.install_package('zlib-devel libjpeg-devel freetype-devel')
 

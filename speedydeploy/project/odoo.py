@@ -15,6 +15,8 @@ class OpenErp(object):
         #fab.env.os.install_package('python-dev')
         # common install_development_libraries
 
+        #pil
+
         # db
         fab.env.os.install_package('postgresql libpq-dev')
 
@@ -32,7 +34,8 @@ class OpenErp(object):
         #self.install_development_libraries()
         # install_virtualenv
 
-        fab.run('~/env/bin/pip install --process-dependency-links -e git+https://github.com/odoo/odoo@7.0#egg=odoo_7')
+        fab.run('~/env/bin/pip install http://download.gna.org/pychart/PyChart-1.39.tar.gz')
+        fab.run('~/env/bin/pip install git+https://github.com/odoo/odoo@7.0#egg=odoo-7')
 
 
 class Odoo(OpenErp):
@@ -48,4 +51,5 @@ class Odoo(OpenErp):
         #self.install_development_libraries()
         # install_virtualenv
 
-        fab.run('~/env/bin/pip install --process-dependency-links -e git+https://github.com/odoo/odoo@8.0#egg=odoo_8')
+        fab.run('~/env/bin/pip install http://download.gna.org/pychart/PyChart-1.39.tar.gz')
+        fab.run('~/env/bin/pip install git+https://github.com/odoo/odoo@8.0#egg=odoo-8')

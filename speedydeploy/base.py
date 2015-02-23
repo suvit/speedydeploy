@@ -75,10 +75,10 @@ class Unix(OS):
             run = fab.run
         return run('mkdir -p %s' % command)
 
-    def set_permission(self, target, pattern):
+    def set_permission(self, target, pattern, sudo=False):
         user = fab.env['user']
-        self.change_owner(target, user, user)
-        self.change_mode(target, pattern)
+        self.change_owner(target, user, user, sudo=sudo)
+        self.change_mode(target, pattern, sudo=sudo)
 
     def set_permissions(self, target=None, pattern=None):
 
@@ -93,11 +93,19 @@ class Unix(OS):
 
         fab.run('chmod -R %(pattern)s %(target)s' % locals() )
 
-    def change_owner(self, target, user, group):
-        fab.sudo('chown -R %(user)s:%(group)s %(target)s' % locals())
+    def change_owner(self, target, user, group, sudo=False):
+        if sudo:
+           cmd = fab.sudo
+        else:
+           cmd = fab.run
+        cmd('chown -R %(user)s:%(group)s %(target)s' % locals())
 
-    def change_mode(self, target, pattern):
-        fab.sudo('chmod -R %(pattern)s %(target)s' % locals() )
+    def change_mode(self, target, pattern, sudo=False):
+        if sudo:
+           cmd = fab.sudo
+        else:
+           cmd = fab.run
+        cmd('chmod -R %(pattern)s %(target)s' % locals())
 
 
 class Linux(Unix):
@@ -191,6 +199,11 @@ class Ubuntu124x64(Ubuntu124):
     name = 'precise'
     version = '12.4'
     arch = 64
+
+class Ubuntu144(Ubuntu124):
+    name = 'j'
+    version = '14.4'
+
 
 
 class SentOS(RedHat):

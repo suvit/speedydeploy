@@ -17,6 +17,7 @@ class DjangoProject(object):
     python_path = '../env/bin/python'
     media_path = '../media'
     settings_local = './settings_local.py'
+    settings_local_filename = 'settings_local.py'
     version = (1, 3)
 
     HAS_WSGI = property(lambda self: self.version >= (1, 4))
@@ -88,7 +89,7 @@ class DjangoProject(object):
     @command(same_name=True)
     def update_settings_local(self):
         settings_local_path = fab.env.os.path.join(self.project_path,
-                                                   'settings_local.py')
+                                                   self.settings_local_filename)
 
         context = fab.env
 
