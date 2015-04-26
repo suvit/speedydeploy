@@ -471,7 +471,7 @@ class Nginx(FrontEnd):
         os = fab.env.os
         log_dir = os.path.join(self.log_dir, _('%(user)s'))
         os.mkdir(log_dir, sudo=True)
-        os.change_owner(log_dir, self.log_user, 'adm')
+        os.change_owner(log_dir, self.log_user, 'adm', sudo=True)
 
         self.disable_site('%(domain)s.conf' % self.env)
         self.enable_site('%(domain)s.conf' % self.env)

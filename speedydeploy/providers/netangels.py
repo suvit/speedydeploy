@@ -1,6 +1,6 @@
 from fabric import api as fab
 
-from ..base import Debian
+from ..base import Debian, Ubuntu
 from ..deployment import _
 from ..project import LogRotate
 from ..project.cron import CronTab, BCronTab
@@ -52,3 +52,22 @@ class NetangelsVDS(Provider):
 class VDS512(NetangelsVDS):
     pass
 VDS2 = VDS512
+
+
+class NetangelsCloudVDS(Provider):
+    def __init__(self):
+        super(NetangelsCloudVDS, self).__init__()
+
+        fab.env.os = Ubuntu()
+
+        fab.env.remote_dir = _("/home/%(user)s/")
+
+        fab.env.cron = CronTab()
+        fab.env.logrotate = LogRotate()
+        # TODO
+        #self.can_sudo = False
+
+
+class Medium(NetangelsCloudVDS):
+    # 4 Core, 2gb RAM
+    pass
