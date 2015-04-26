@@ -26,10 +26,13 @@ class SphinxSearch(Daemon):
 
     supervisor = False
 
-    def __init__(self, daemon_name=None):
+    def __init__(self, daemon_name=None, configure_daemon=False, install_scripts=True):
         if daemon_name is None:
             daemon_name = _('%(project_name)s_searchd')
         super(SphinxSearch, self).__init__(daemon_name)
+
+        self.configure_daemon = configure_daemon
+        self.install_scripts = install_scripts
 
     def dirs(self):
         return ["data/sphinxsearch/",
@@ -47,27 +50,29 @@ class SphinxSearch(Daemon):
                        )
 
     def put_config(self):
-        if not self.supervisor:
+        if not self.supervisor and self.configure_daemon:
             self.configure_daemon()
 
-        upload_template("sphinxsearch/sphinx.conf",
-                        _("%(remote_dir)s/etc/sphinxsearch/sphinx.conf"),
-                        fab.env,
-                        use_jinja=True)
+        upload_first([_("sphinxsearch/%(project_name)s.conf"),
+                      "sphinxsearch/default.conf"],
+                     _("%(remote_dir)s/etc/sphinxsearch/sphinx.conf"),
+                     fab.env,
+                     use_jinja=True)
 
-        upload_template("sphinxsearch/index_all.sh",
-                        _("%(remote_dir)s/etc/sphinxsearch/index_all.sh"),
-                        fab.env,
-                        use_jinja=True,
-                        mode=0755,
-                        )
+        if self.install_scripts:
+            upload_template("sphinxsearch/index_all.sh",
+                            _("%(remote_dir)s/etc/sphinxsearch/index_all.sh"),
+                            fab.env,
+                            use_jinja=True,
+                            mode=0755,
+                            )
 
-        upload_template("sphinxsearch/index_delta.sh",
-                        _("%(remote_dir)s/etc/sphinxsearch/index_delta.sh"),
-                        fab.env,
-                        use_jinja=True,
-                        mode=0755,
-                        )
+            upload_template("sphinxsearch/index_delta.sh",
+                            _("%(remote_dir)s/etc/sphinxsearch/index_delta.sh"),
+                            fab.env,
+                            use_jinja=True,
+                            mode=0755,
+                            )
 
     def install_package(self):
         #fab.env.os.install_package('sphinxsearch')

@@ -124,9 +124,10 @@ class Project(object):
             self.update_log()
 
     def update_log(self):
-        fab.sudo(_('ln -s /var/log/speedydeploy/%(user)s/'
-                   ' %(remote_dir)slog'
-                  ))
+        if not exists('%(remote_dir)slog'):
+            fab.sudo(_('ln -s /var/log/speedydeploy/%(user)s/'
+                       ' %(remote_dir)slog'
+                      ))
 
     @command(same_name=True, aliases=('update_virtual_env',))
     def install_requirements(self):
