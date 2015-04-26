@@ -33,7 +33,7 @@ def render_template(filename, context=None, use_jinja=False, template_dir=None):
             from jinja2 import Environment, FileSystemLoader, ChoiceLoader
             from jinja2.exceptions import TemplateNotFound
 
-            dirs = ['.', common_template_dir]
+            dirs = ['.', 'templates', common_template_dir]
             if template_dir:
                 dirs.insert(0, template_dir)
             loader = FileSystemLoader(dirs)
