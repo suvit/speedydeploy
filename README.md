@@ -1,3 +1,7 @@
+DEPRECATED
+==========
+
+We use ansible now.
 
 Installing
 ==========
