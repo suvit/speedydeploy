@@ -96,7 +96,8 @@ class GIT(VCS):
             fab.run('git submodule update --init')
 
     def clone(self):
-        fab.run(_('git clone --recursive %(git_path)s'))
+        repo_name = fab.env.get('vcs_repo_name') or ''
+        fab.run(_('git clone --recursive %(git_path)s') + ' ' + repo_name)
         #if self.use_submodules:
         #    with fab.cd(_('%(remote_dir)s/%(vcs_repo_name)s/')):
         #        fab.run('git submodule init')

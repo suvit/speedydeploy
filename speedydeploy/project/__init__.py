@@ -160,9 +160,9 @@ class Project(object):
             # must have to compile PIL jpeg support
             # XXX remove to PIL object
             if isinstance(os, Debian):
-                os.install_package('libjpeg62 libjpeg62-dev')
+                os.install_package('libjpeg-dev')
                 os.install_package('libfreetype6 libfreetype6-dev')
-                os.install_package('libtiff4')
+                os.install_package('libtiff-dev')
             elif isinstance(os, RedHat):
                 os.install_package('zlib-devel libjpeg-devel freetype-devel')
 

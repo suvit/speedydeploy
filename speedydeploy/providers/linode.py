@@ -33,9 +33,9 @@ class Linode1024(Linode): # OLD
     pass
 
 
-class Linode1(Linode):
+class Linode1(Linode512):
     pass
 
 
-class Linode2(Linode):
+class Linode2(Linode1024):
     pass

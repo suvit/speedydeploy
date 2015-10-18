@@ -1,6 +1,6 @@
 import os
 
-LOG_DIRNAME = locals().get('LOG_DIRNAME', '{{remote_dir}}log/')
+LOG_DIRNAME = locals().get('LOG_DIRNAME', '{{remote_dir}}/log/')
 LOG_FILENAME = locals().get('LOG_FILENAME', 'main.log')
 LOG_ERROR_FILENAME = locals().get('LOG_ERROR_FILENAME', 'main.error.log')
 

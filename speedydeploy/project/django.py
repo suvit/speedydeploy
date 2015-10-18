@@ -180,5 +180,12 @@ class Django16(Django15):
 class Django17(Django16):
     version = (1, 7)
 
+    USE_SOUTH = False
+
     def migrate(self, app=''):
         self.manage('migrate --no-color %s' % app)
+
+
+class Django18(Django17):
+    version = (1, 8)
+
