@@ -17,7 +17,7 @@ class Jenkins(ObjectWithCommands):
     namespace = 'jenkins'
 
     update_status_file = '.reqs_updated'
-    test_repo = 'django-pwutils[jenkins]'
+    test_repo = 'git+https://bitbucket.org/suvitorg/django-pwutils[jenkins]'
 
     def __init__(self, settings='pwutils.settings.jenkins'):
         self.settings = settings
